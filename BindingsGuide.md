@@ -1,4 +1,4 @@
-escheme "bindings" -- A Deveoper's Guide
+escheme "bindings" -- A Developer's Guide
 ========================================
 
 What follows are guidelines for extending escheme with ones own primitive
