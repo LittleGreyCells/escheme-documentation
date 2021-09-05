@@ -4,7 +4,7 @@ escheme "bindings" -- A Developer's Guide
 What follows are guidelines for extending escheme with ones own primitive
 functions written in C++.
 
-## 1 General Strategy
+## General Strategy
 
 The general strategy for this non-trivial exercise consists of several 
 coordinated tasks:
@@ -17,7 +17,7 @@ coordinated tasks:
 
 Let's tackle each of these in turn.
 
-### 1.1 Writing the extension function
+### Writing the extension function
 
 Extension functions have a single signature:
 ```
@@ -27,7 +27,7 @@ Extension functions have a single signature:
 
 It's a function which takes no arguments and returns an object of type SEXPR.
 
-### 1.2 Accessing function arguments
+### Accessing function arguments
 
 Extension function arguments are passed to the function using the ARGSTACK.
 ```
@@ -39,7 +39,7 @@ The arguments to user defined functions are escheme objects, not C++ native
 types. The embedded values must be accessed indirectly through access functions.
 But let's not get ahead of ourselves. Argument values will be addressed later.
 
-#### 1.2.1 Determine whether the function should have arguments
+#### Determine whether the function should have arguments
 
 If the function should not have arguments, assert the following;
 ```
@@ -49,7 +49,7 @@ If the function should not have arguments, assert the following;
 If arguments have been pushed on the stack, an error will be raised.
 If there are arguments, continue to 2b.
 
-#### 1.2.2 Create an ArgstackIterator
+#### Create an ArgstackIterator
 ```
   ArgstackIterator iter;
 ```
@@ -80,7 +80,7 @@ If the arguments are variable in number, the following approach can be used:
   }
 ```
 
-#### 1.2.3 Argument types
+#### Argument types
 
 If the argument is expected to be a certain type, then the "guard" function
 can be used:
@@ -118,7 +118,7 @@ There are many predefined type guards:
   bool promisep( const SEXPR n );
 ```
 
-#### 1.2.4 Argument values
+#### Argument values
 
 To extract the value and store it in the correctly typed C++ object, use one
 of the accessor functions designed to penetrate the escheme object.
@@ -134,7 +134,7 @@ of the accessor functions designed to penetrate the escheme object.
   etc.
 ```
 
-### 1.3 Constructing an escheme object
+### Constructing an escheme object
 
 It is imperative that an object, which is constructed and intended to be
 returned by the function, be protected from garbage collection.
@@ -186,14 +186,14 @@ Alternatively one might contruct the pair as follows.
   }
 ```
 
-### 1.4 Returning the object or null
+### Returning the object or null
 
 See the previous example in 3.
 
 If the function doesn't return a meaningful value, it must return something.
 Return the object nil.
 
-### 1.5. Extending the function table
+### Extending the function table
 
 
 See file funtab.cxx and the function table funtab.
@@ -208,7 +208,7 @@ See file funtab.cxx and the function table funtab.
   };
 ```
 
-## 2 Advanced Example
+## Advanced Example
 
 The set of socket bindings for escheme is an advanced example of writing a 
 non-trivial extension to escheme. See
