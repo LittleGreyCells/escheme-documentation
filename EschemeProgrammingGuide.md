@@ -7,7 +7,7 @@ Escheme supports the following primitive types:
 * characters -- the ascii characer set
 * booleans -- #t, #f
 * fixnums -- 64-bit signed numbers
-* flonums -- double pricision floating point
+* flonums -- double precision floating point
 * strings -- ascii strings
 * symbols -- with value cell and property list
 * lists -- the principal structured type
@@ -23,6 +23,7 @@ Escheme supports the following primitive types:
 
 A simple EBNF that describes lexical and syntacitcal items:
 ```
+   <lhs> := <rhs> -- <rhs> can replace <lhs>
    {<item>}* -- zero or more <item>
    {<item>}+ -- one or more <items>
    [<item>] -- optional <item>
@@ -32,8 +33,9 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ## Literals
 ```
-   <alpha> := manifest
-   <punct> := manifest
+   <sexpr> := any symbolic expression
+   <alpha> := ascii alpha characters
+   <punct> := ascii punctuation characters
    <binary-digit> := 0|1
    <quarnary-digit> := 0..3
    <octal-digit> := 0..7
@@ -57,62 +59,106 @@ A simple EBNF that describes lexical and syntacitcal items:
 ## Special Forms
 
 ```
-   <sexpr> := any symbolic expression
    <formal> := <symbol>
    <rest> := <symbol>
-   
+```
+```
    (quote <sexpr>)
+   (delay <sexpr>)
+```
+No or delayed evaluation.
+```   
    (define <symbol> <sexpr>)
    (define (<symbol> {<formal>}*) {<sexpr>}*)
    (define (<symbol> {<formal>}+ . <rest>) {<sexpr>}*)
+```   
+Symbol definition.
+```   
    (lambda <formal> {<sexpr>}*)
    (lambda ({<formal>}*) {<sexpr>}*)
    (lambda ({<formal>}+ . <rest>) {<sexpr>}*)
+```   
+Closure definition.
+```   
    (set! <symbol> <sexpr>)
+   (access <symbol> <env-sexpr>)
    (set! (access <symbol> <env-sexpr>) <sexpr>)
+```
+Symbol accessing and setting.
+```   
    (if <condition-sexpr> <then-sexpr> [<else-sexpr>])
    (cond {({<sexpr>}*)}* [else {<sexpr>}*])
+```
+Conditional evaluation.
+```   
    (case <sexpr> {(({<sexpr>}+) <sexpr>)}* [else {<sexpr>}+])
+```
+Switch statement.
+```   
    (and {<sexpr>}*)
    (or {<sexpr>}*)
+```
+Short curcuit boolean evaluation.
+```   
    (let {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
    (let* {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
    (letrec {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
-   (begin {<sexpr>}*)	
+```
+Frame environement creation with different binding semantics.
+```   
+   (sequence {<sexpr>}*)	
+   (begin {<sexpr>}*)
+```
+Sequence evaluation.
+```
    (do ({(<symbol> <init-sexpr> <step-sexpr>)}+) (<test-sexpr> {<sexpr>}+) {<sexpr>}+)
-   (delay <sexpr>)
-   (access <symbol> <env-sexpr>)
    (while {<sexpr>}*)
+```
+Looping.
+```
    (quasiquote <template-sexpr>)
    (unquote <sexpr>)
    (unquotesplicing <sexpr>)
-
 ```
+Template expansion support.
 
 ## Functions
 
 ### System Functions
 ```
    (exit)
+```
+Exit escheme.
+```
    (gc) -> <vector>
+```
+Initiate garbage collection and return memory statistics.
+```
    (mm) -> <vector>
+```
+Return current memory statistics.
+```
    (fs) -> <vector>
+```
+Return current frame store statistics.
+```
    (%object-address <object>) -> <fixnum>
 ```
+Return an escheme object's address.
 
 ### List Functions
 ```
    (car <list>) -> <head>
    (cdr <list>) -> <tail>
-   (cxxr)
-   (cxxxr)
-   (cxxxxr)
+   (cxyr <sexpr>) -> (cxr (cyr <sexpr>)) where x/y = {a,d}
+   (cxyzr <sexpr>) -> (cxr (cyr (czr <sexpr>))) where x/y/z in {a,d}
+   (cxyzwr <sexpr>) ->  (cxr (cyr (czr (cwr <sexpr>)))) where x/y/z/w in {a,d}
    (cons <sexpr1> <sexpr2>) -> (<sexpr1> . <sexpr2>)
    (list {<sexpr>}*) -> <list>
    (list* {<sexpr>}*) -> <list>
    (length <list>) -> <fixnum>
-   (set-car! (<sexpr1> . <sexpr2>) <newcar>) -> (<newcar> . <sexpr2>)
-   (set-cdr! (<sexpr1> . <sexpr2>) <newcdr>) -> (<sexpr1> . <newcdr>)
+   (set-car! <list> <newcar-sexpr>) -> <list>
+   (set-cdr! <list> <newcdr-sexpr>) -> <list>
    (append {<list>}*) -> <list>
    (reverse <list>) -> <list>
    (last-pair <list>) -> (<pair> | nil)
@@ -122,9 +168,9 @@ A simple EBNF that describes lexical and syntacitcal items:
 ### Vector Functions
 ```
    (vector {<sexp>}*) -> <vector>
-   (make-vector <fixnum>) -> <vector>
-   (vector-ref <vector> <fixnum>) -> <sexpr>
-   (vector-set! <vector> <fixnum> <sexpr>) -> <sexpr>
+   (make-vector <size-fixnum>) -> <vector>
+   (vector-ref <vector> <index-fixnum>) -> <sexpr>
+   (vector-set! <vector> <index-fixnum> <sexpr>) -> <sexpr>
    (vector-length <vector>) -> <fixnum>
    (vector-fill! <vector> <sexpr>) -> <vector>
    (vector-copy! <dest-vector> <dest-start> <src-vector> [<src-start> <src-end>]) -> <dest-vector>
@@ -132,44 +178,41 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Byte Vector Functions
 ```
-   (byte-vector)
-   (make-byte-vector)
-   (byte-vector-ref)
-   (byte-vector-set!)
-   (byte-vector-length)
+   (byte-vector {<fixnum>}*) -> <byte-vector>
+   (make-byte-vector <size-fixnum>) -> <byte-vector>
+   (byte-vector-ref <byte-vector> <index-fixnum>) -> <fixnum>
+   (byte-vector-set! <byte-vector> <index-fixnum> <value-fixnum>) -> <value-fixnum>
+   (byte-vector-length <byte-vector>) -> <size-fixnum>
 ```
 
 ### Symbol Functions
 ```
-   (gensym)
-   (%symbol-value)
-   (%set-symbol-value!)
-   (symbol-plist)
-   (set-symbol-plist!)
-   (get)
-   (put)
-   (remprop)
-   (bound?)
-   (all-symbols)
-```
-
-### Equality Functions
-```
-   (eq?)
-   (eqv?)
-   (equal?)
+   <plist> := ({<propery-sexpr> <property-value-sexpr>}*)
+   <property> := <sexpr>
+   <property-value> := <sexpr>
+   
+   (gensym (<symbol>|<string>|<fixnum>)) -> <symbol>
+   (%symbol-value <symbol>) -> <value-sexpr>
+   (%set-symbol-value! <symbol> <value-sexpr>) -> <value-sexpr>
+   (symbol-plist <symbol>) -> <plist>
+   (set-symbol-plist! <symbol> <plist>) -> <plist>
+   (get <symbol> <property>) -> <property-value>
+   (put <symbol> <property> <property-value>) -> <property>
+   (remprop <symbol> <property>) -> <property-value>
+   (bound? <symbol>) -> <boolean>
+   (all-symbols) -> <symbol-list>
 ```
 
 ### I/O Functions
 ```
-   (read)
-   (print)
-   (write)
-   (display)
-   (newline)
-   (read-char)
-   (write-char)
-   (open-input-file)
+   (read [<port>]) -> <sexpr>
+   (print <sexpr> [<port>]) -> #t
+   (write <sexpr> [<port>]) -> #t
+   (display <sexpr> [<port>]) -> #t
+   (newline [<port>]) -> #t
+   (read-char [<port>]) -> <char>
+   (write-char <char> [<port>]) -> #t
+   (open-input-file <file-path-string>) -> <port>
    (open-output-file)
    (open-append-file)
    (open-update-file)
@@ -185,16 +228,24 @@ A simple EBNF that describes lexical and syntacitcal items:
 ```
 
 ### Math Functions
+#### Arithmetic
 ```
    (+)
    (-)
    (*)
    (/)
+```
+#### Logical
+```
+   (not)
    (=)
    (<)
    (<=)
    (>)
    (>=)
+```
+#### Miscellaneous
+```
    (truncate)
    (floor)
    (ceiling)
@@ -221,6 +272,7 @@ A simple EBNF that describes lexical and syntacitcal items:
 ```
 
 ### Environment Functions
+#### Frame-based
 ```
    (the-environment)
    (procedure-environment)
@@ -230,7 +282,7 @@ A simple EBNF that describes lexical and syntacitcal items:
    (the-global-environment)
 ```
 
-### Associative Environment Functions
+#### Associative
 ```
    (%make-assoc-env)
    (%assoc-env-has?)
@@ -245,11 +297,6 @@ A simple EBNF that describes lexical and syntacitcal items:
    (%get-sexprs)
    (assemble)
    (disassemble)
-```
-
-### Logical Functions
-```
-   (not)
 ```
 
 ### Predicate Functions
@@ -343,6 +390,13 @@ A simple EBNF that describes lexical and syntacitcal items:
    (char-lower-case?)
    (char-upcase)
    (char-downcase)
+```
+
+### Equality Functions
+```
+   (eq? <sexpr1> <sexpr2>) -> <boolean>
+   (eqv? <sexpr1> <sexpr2>) -> <boolean>
+   (equal? <sexpr1> <sexpr2>) -> <boolean>
 ```
 
 ### Member Functions
