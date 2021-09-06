@@ -21,6 +21,7 @@ Escheme supports the following primitive types:
 * code objects -- compiled objects
 * dictionaries -- python-like dicts where any object can be a key
 
+## Meta-grammar
 A simple EBNF that describes lexical and syntacitcal items:
 ```
    <lhs> := <rhs> -- <rhs> can replace <lhs>
@@ -58,93 +59,85 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ## Special Forms
 
-```
-   <formal> := <symbol>
-   <rest> := <symbol>
-```
+No or delayed evaluation.
 ```
    (quote <sexpr>)
    (delay <sexpr>)
 ```
-No or delayed evaluation.
+Symbol definition.
 ```   
+   <formal> := <symbol>
+   <rest> := <symbol>
    (define <symbol> <sexpr>)
    (define (<symbol> {<formal>}*) {<sexpr>}*)
    (define (<symbol> {<formal>}+ . <rest>) {<sexpr>}*)
 ```   
-Symbol definition.
+Closure construction.
 ```   
    (lambda <formal> {<sexpr>}*)
    (lambda ({<formal>}*) {<sexpr>}*)
    (lambda ({<formal>}+ . <rest>) {<sexpr>}*)
 ```   
-Closure definition.
-```   
-   (set! <symbol> <sexpr>)
-   (access <symbol> <env-sexpr>)
-   (set! (access <symbol> <env-sexpr>) <sexpr>)
-```
 Symbol accessing and setting.
 ```   
-   (if <condition-sexpr> <then-sexpr> [<else-sexpr>])
-   (cond {({<sexpr>}*)}* [else {<sexpr>}*])
+   (access <symbol> <env-sexpr>)
+   (set! <symbol> <sexpr>)
+   (set! (access <symbol> <env-sexpr>) <sexpr>)
 ```
 Conditional evaluation.
 ```   
+   (if <condition-sexpr> <then-sexpr> [<else-sexpr>])
+   (cond {({<sexpr>}*)}* [else {<sexpr>}*])
    (case <sexpr> {(({<sexpr>}+) <sexpr>)}* [else {<sexpr>}+])
 ```
-Switch statement.
+Short curcuit boolean evaluation.
 ```   
    (and {<sexpr>}*)
    (or {<sexpr>}*)
 ```
-Short curcuit boolean evaluation.
+Frame-based environement creation.
 ```   
    (let {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
    (let* {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
    (letrec {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
 ```
-Frame environement creation with different binding semantics.
+Sequence evaluation.
 ```   
    (sequence {<sexpr>}*)	
    (begin {<sexpr>}*)
 ```
-Sequence evaluation.
+Looping.
 ```
    (do ({(<symbol> <init-sexpr> <step-sexpr>)}+) (<test-sexpr> {<sexpr>}+) {<sexpr>}+)
    (while {<sexpr>}*)
 ```
-Looping.
+Template expansion support.
 ```
    (quasiquote <template-sexpr>)
    (unquote <sexpr>)
    (unquotesplicing <sexpr>)
 ```
-Template expansion support.
 
 ## Functions
 
 ### System Functions
+Exit escheme.
 ```
    (exit)
 ```
-Exit escheme.
+Initiate garbage collection and/or return memory statistics.
 ```
    (gc) -> <vector>
-```
-Initiate garbage collection and return memory statistics.
-```
    (mm) -> <vector>
-```
-Return current memory statistics.
-```
-   (fs) -> <vector>
 ```
 Return current frame store statistics.
 ```
-   (%object-address <object>) -> <fixnum>
+   (fs) -> <vector>
 ```
 Return an escheme object's address.
+```
+   (%object-address <object>) -> <fixnum>
+```
 
 ### List Functions
 ```
