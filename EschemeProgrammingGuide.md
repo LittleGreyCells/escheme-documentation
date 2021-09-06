@@ -21,14 +21,14 @@ A simple BNF for describing lexical items.
    <boolean> := #\t | #\f | #!true | #!false
    <vector> := #([<sexpr>...])
    <list> := ([<sexpr>...]) | #!null
-   <symbol> := <not-anything-else>
+   <symbol> := not anything else
     
 ```
 
 ## Special Forms
 
 ```
-   <sexpr> := any literal value returning special form
+   <sexpr> := any symbolic expression
    
    (quote <sexpr>)
    (define <symbol> <sexpr>)
