@@ -16,13 +16,21 @@ Escheme supports the following primitive types:
 * primitive functions -- system defined
 * closures -- user constructed with lambda
 * continuations -- execution contexts
-* ports -- including string ports
+* ports -- in/out/inout including string ports
 * promises -- delayed evaluation
 * code objects -- compiled objects
-* dictionaries -- Python-like dicts
+* dictionaries -- python-like dicts where any object can be a key
+
+A simple EBNF that describes lexical and syntacitcal items:
+```
+   {<item>}* -- zero or more <item>
+   {<item>}+ -- one or more <items>
+   [<item>] -- optional <item>
+   (<item1> | <item2>) -- <item1> or <item2>
+   <item1> .. <itemN> -- one of sequence described by [<item1>,<itemN>]
+```
 
 ## Literals
-A simple EBNF that describes lexical items:
 ```
    <alpha> := manifest
    <punct> := manifest
@@ -32,7 +40,7 @@ A simple EBNF that describes lexical items:
    <decimal-digit> := 0..9
    <hex-digit> := 0..9 | a..f | A..F
    <char> := #\<alpha> | #\space | #\newline | #\tab
-   <string> := "<char>..."
+   <string> := "{<char>}*"
    <number> := [(-|+)]{<decimal-digit>}+[.{<decimal-digit>}*][[(-|+)](e|E)]{<decimal-digit}*
    <number> := #\b{<binary-digit>}+ | #\B{<binary-digit>}+
    <number> := #\q{<quarnary-digit>}+ | #\Q{<quarnary-digit>}+
@@ -41,7 +49,7 @@ A simple EBNF that describes lexical items:
    <number> := #\x{<hex-digit>}+ | #\X{<hex-digit>}+
    <boolean> := #\t | #\f | #!true | #!false
    <vector> := #({<sexpr>}*)
-   <list> := ([<sexpr>...]) | #!null
+   <list> := ({<sexpr>}*) | #!null
    <symbol> := any non-number string of chars delimited by ' ', '(', ')', '[', ']', ';'
     
 ```
@@ -56,23 +64,25 @@ A simple EBNF that describes lexical items:
    (quote <sexpr>)
    (define <symbol> <sexpr>)
    (define (<symbol> {<formal>}*) {<sexpr>}*)
-   <== resume here <================================================
-   (lambda (<formal> . <rest>]) [<sexpr>...])
+   (define (<symbol> {<formal>}+ . <rest>) {<sexpr>}*)
+   (lambda <formal> {<sexpr>}*)
+   (lambda ({<formal>}*) {<sexpr>}*)
+   (lambda ({<formal>}+ . <rest>) {<sexpr>}*)
    (set! <symbol> <sexpr>)
    (set! (access <symbol> <env-sexpr>) <sexpr>)
    (if <condition-sexpr> <then-sexpr> [<else-sexpr>])
-   (cond [(<sexpr>...) ...] [else <sexpr>...])
-   (case <sexpr> [((<sexpr> ...) <sexpr>) ...] [(else <sexpr>...)])
-   (and [<sexpr> ...])
-   (or [<sexpr> ...])
-   (let [(<symbol> | (<symbol> <expr>)) ...] [<sexpr>...])
-   (let* [(<symbol> | (<symbol> <expr>)) ...] [<sexpr>...])
-   (letrec [(<symbol> | (<symbol> <expr>)) ...] [<sexpr>...])
-   (begin [<sexpr> ...])	
-   (do ((<symbol> <init-sexpr> <step-sexpr>) ...) (<test-sexpr> <sexpr> ...) <sexpr> ...)
+   (cond {({<sexpr>}*)}* [else {<sexpr>}*])
+   (case <sexpr> {(({<sexpr>}+) <sexpr>)}* [else {<sexpr>}+])
+   (and {<sexpr>}*)
+   (or {<sexpr>}*)
+   (let {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
+   (let* {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
+   (letrec {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
+   (begin {<sexpr>}*)	
+   (do ({(<symbol> <init-sexpr> <step-sexpr>)}+) (<test-sexpr> {<sexpr>}+) {<sexpr>}+)
    (delay <sexpr>)
    (access <symbol> <env-sexpr>)
-   (while [<sexpr> ...])
+   (while {<sexpr>}*)
    (quasiquote <template-sexpr>)
    (unquote <sexpr>)
    (unquotesplicing <sexpr>)
@@ -92,18 +102,18 @@ A simple EBNF that describes lexical items:
 
 ### List Functions
 ```
-   (car <list>) -> <sexpr>
-   (cdr <list>) -> <list>
+   (car <list>) -> <head>
+   (cdr <list>) -> <tail>
    (cxxr)
    (cxxxr)
    (cxxxxr)
    (cons <sexpr1> <sexpr2>) -> (<sexpr1> . <sexpr2>)
-   (list [<sexpr1> <sexpr2> ...]) -> (<sexpr1> <sexpr2> ...)
-   (list* [<sexpr1> <sexpr2> ... <sexprN>]) -> (<sexpr1> <sexpr2> ... . <sexprN>)
+   (list {<sexpr>}*) -> <list>
+   (list* {<sexpr>}*) -> <list>
    (length <list>) -> <fixnum>
    (set-car! (<sexpr1> . <sexpr2>) <newcar>) -> (<newcar> . <sexpr2>)
    (set-cdr! (<sexpr1> . <sexpr2>) <newcdr>) -> (<sexpr1> . <newcdr>)
-   (append [<list> ...]) -> <list>
+   (append {<list>}*) -> <list>
    (reverse <list>) -> <list>
    (last-pair <list>) -> (<pair> | nil)
    (list-tail <list> <n>) -> (<list> | nil))
@@ -111,13 +121,13 @@ A simple EBNF that describes lexical items:
 
 ### Vector Functions
 ```
-   (vector {<sexp>}*) -> <vector>)
-   (make-vector)
-   (vector-ref)
-   (vector-set!)
-   (vector-length)
-   (vector-fill!)
-   (vector-copy!)
+   (vector {<sexp>}*) -> <vector>
+   (make-vector <fixnum>) -> <vector>
+   (vector-ref <vector> <fixnum>) -> <sexpr>
+   (vector-set! <vector> <fixnum> <sexpr>) -> <sexpr>
+   (vector-length <vector>) -> <fixnum>
+   (vector-fill! <vector> <sexpr>) -> <vector>
+   (vector-copy! <dest-vector> <dest-start> <src-vector> [<src-start> <src-end>]) -> <dest-vector>
 ```
 
 ### Byte Vector Functions
@@ -357,27 +367,27 @@ A simple EBNF that describes lexical items:
 
 ### Dictionary Functions
 ```
-   (make-dict)
-   (has-key?)
-   (dict-ref)
-   (dict-set!)
-   (dict-items)
-   (dict-rem!)
-   (dict-empty!)
+   (make-dict [<size>]) -> <dict>
+   (has-key? <dict> <key-sexpr>) -> <boolean>
+   (dict-ref <dict> <key-sexpr>) -> <value-sexpr>
+   (dict-set! <dict> <key-sexpr> <value-sexpr>) -> <value-sexpr>
+   (dict-items <dict>) -> ({(<key-sexpr> . <value-sexpr>)}*)
+   (dict-rem! <dict> <key-sexpr>) -> <key-sexpr>
+   (dict-empty! <dict>) -> <dict>
 ```
 
 ### Conversion Functions
 ```
-   (list->vector)
-   (vector->list)
-   (list->string)
-   (string->list)
-   (symbol->string)
-   (string->symbol)
-   (integer->char)
-   (char->integer)
-   (integer->string)
-   (string->integer)
+   (list->vector <list>) -> <vector>
+   (vector->list <vector>) -> <list>
+   (list->string <list-of-char>) -> <string>
+   (string->list <string>) -> <list-of-char>
+   (symbol->string <symbol>) -> <string>
+   (string->symbol <string>) -> <symbol>
+   (integer->char <fixnum>) -> <char>
+   (char->integer <char>) -> <fixnum>
+   (integer->string <fixnum>) -> <string>
+   (string->integer <string>) -> <fixnum>
 ```
 
 ### Transcript Functions
