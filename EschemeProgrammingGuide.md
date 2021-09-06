@@ -1,7 +1,8 @@
-escheme Programming Guide
-========================
+escheme Programming/Language Guide
+==================================
 
 ## Literals
+A simple BNF for describing lexical items.
 ```
     character := #\<char> | #\space | #\newline | #\tab
     string := "<char>..."
@@ -14,7 +15,7 @@ escheme Programming Guide
     boolean := #\t | #\f | #!true | #!false
     vector := #([<sexpr>...])
     list := ([<sexpr>...]) | #!null
-    symbol := <not-anyting-else>
+    symbol := <not-anything-else>
     
 ```
 
