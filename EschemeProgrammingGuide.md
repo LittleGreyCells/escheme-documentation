@@ -59,12 +59,12 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ## Special Forms
 
-No or delayed evaluation.
+### No or delayed evaluation
 ```
    (quote <sexpr>)
    (delay <sexpr>)
 ```
-Symbol definition.
+### Symbol definition
 ```   
    <formal> := <symbol>
    <rest> := <symbol>
@@ -72,46 +72,46 @@ Symbol definition.
    (define (<symbol> {<formal>}*) {<sexpr>}*)
    (define (<symbol> {<formal>}+ . <rest>) {<sexpr>}*)
 ```   
-Closure construction.
+### Closure construction
 ```   
    (lambda <formal> {<sexpr>}*)
    (lambda ({<formal>}*) {<sexpr>}*)
    (lambda ({<formal>}+ . <rest>) {<sexpr>}*)
 ```   
-Symbol accessing and setting.
+### Symbol accessing and setting
 ```   
    (access <symbol> <env-sexpr>)
    (set! <symbol> <sexpr>)
    (set! (access <symbol> <env-sexpr>) <sexpr>)
 ```
-Conditional evaluation.
+### Conditional evaluation
 ```   
    (if <condition-sexpr> <then-sexpr> [<else-sexpr>])
    (cond {({<sexpr>}*)}* [else {<sexpr>}*])
    (case <sexpr> {(({<sexpr>}+) <sexpr>)}* [else {<sexpr>}+])
 ```
-Short curcuit boolean evaluation.
+### Short curcuit boolean evaluation
 ```   
    (and {<sexpr>}*)
    (or {<sexpr>}*)
 ```
-Frame-based environement creation.
+### Frame-based environement creation
 ```   
    (let {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
    (let* {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
    (letrec {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
 ```
-Sequence evaluation.
+### Sequence evaluation
 ```   
    (sequence {<sexpr>}*)	
    (begin {<sexpr>}*)
 ```
-Looping.
+### Looping
 ```
    (do ({(<symbol> <init-sexpr> <step-sexpr>)}+) (<test-sexpr> {<sexpr>}+) {<sexpr>}+)
    (while {<sexpr>}*)
 ```
-Template expansion support.
+### Template expansion
 ```
    (quasiquote <template-sexpr>)
    (unquote <sexpr>)
