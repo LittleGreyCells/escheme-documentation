@@ -1,49 +1,57 @@
-escheme Programming/Language Guide
-==================================
+escheme Programming Guide
+=========================
 
 ## Literals
 A simple BNF for describing lexical items.
 ```
-    character := #\<char> | #\space | #\newline | #\tab
-    string := "<char>..."
-    number := [(-|+)]<digit>...[.][<digit>...][[(-|+)](e|E)]<digit>...
-    number := #\b<binary-digit>... | #\B<binary-digit>...
-    number := #\q<quarnary-digit>... | #\Q<quarnary-digit>...
-    number := #\o<octal-digit>... | #\O<octal-digit>...
-    number := #\d<decimal-digit>... | #\D<decimal-digit>...
-    number := #\x<hex-digit>... | #\<hex-digit>...
-    boolean := #\t | #\f | #!true | #!false
-    vector := #([<sexpr>...])
-    list := ([<sexpr>...]) | #!null
-    symbol := <not-anything-else>
+   <ascii-char> := manifest
+   <binary-digit> := manifest
+   <quarnary-digit> := manifest
+   <octal-digit> := manifest
+   <decimal-digit> := manifest
+   <hex-digit> := manifest
+   <char> := #\<ascii-char> | #\space | #\newline | #\tab
+   <string> := "<char>..."
+   <number> := [(-|+)]<digit>...[.][<digit>...][[(-|+)](e|E)]<digit>...
+   <number> := #\b<binary-digit>... | #\B<binary-digit>...
+   <number> := #\q<quarnary-digit>... | #\Q<quarnary-digit>...
+   <number> := #\o<octal-digit>... | #\O<octal-digit>...
+   <number> := #\d<decimal-digit>... | #\D<decimal-digit>...
+   <number> := #\x<hex-digit>... | #\<hex-digit>...
+   <boolean> := #\t | #\f | #!true | #!false
+   <vector> := #([<sexpr>...])
+   <list> := ([<sexpr>...]) | #!null
+   <symbol> := <not-anything-else>
     
 ```
 
 ## Special Forms
 
 ```
-    (quote <sexpr>)
-    (define <symbol> <sexpr>)
-    (define (<symbol> [<formal>...]) [<sexpr>...])
-    (lambda [(<formal> ... [ . <rest>]) [<sexpr>...])
-    (set! <symbol> <sexpr>)
-    (set! (access <symbol> <env-sexpr>) <sexpr>)
-    (if <condition-sexpr> <then-sexpr> [<else-sexpr>])
-    (cond [(<sexpr>...) ...] [else <sexpr>...])
-    (case <sexpr> [((<sexpr> ...) <sexpr>) ...] [(else <sexpr>...)])
-    (and [<sexpr> ...])
-    (or [<sexpr> ...])
-    (let [(<symbol> | (<symbol> <expr>)) ...] [<sexpr>...])
-    (let* [(<symbol> | (<symbol> <expr>)) ...] [<sexpr>...])
-    (letrec [(<symbol> | (<symbol> <expr>)) ...] [<sexpr>...])
-    (begin [<sexpr> ...])	
-    (do ((<symbol> <init-sexpr> <step-sexpr>) ...) (<test-sexpr> <sexpr> ...) <sexpr> ...)
-    (delay <sexpr>)
-    (access <symbol> <env-sexpr>)
-    (while [<sexpr> ...])
-    (quasiquote <template-sexpr>)
-    (unquote <sexpr>)
-    (unquotesplicing <sexpr>)
+   <sexpr> := any literal value returning special form
+   
+   (quote <sexpr>)
+   (define <symbol> <sexpr>)
+   (define (<symbol> [<formal>...]) [<sexpr>...])
+   (lambda [(<formal> ... [ . <rest>]) [<sexpr>...])
+   (set! <symbol> <sexpr>)
+   (set! (access <symbol> <env-sexpr>) <sexpr>)
+   (if <condition-sexpr> <then-sexpr> [<else-sexpr>])
+   (cond [(<sexpr>...) ...] [else <sexpr>...])
+   (case <sexpr> [((<sexpr> ...) <sexpr>) ...] [(else <sexpr>...)])
+   (and [<sexpr> ...])
+   (or [<sexpr> ...])
+   (let [(<symbol> | (<symbol> <expr>)) ...] [<sexpr>...])
+   (let* [(<symbol> | (<symbol> <expr>)) ...] [<sexpr>...])
+   (letrec [(<symbol> | (<symbol> <expr>)) ...] [<sexpr>...])
+   (begin [<sexpr> ...])	
+   (do ((<symbol> <init-sexpr> <step-sexpr>) ...) (<test-sexpr> <sexpr> ...) <sexpr> ...)
+   (delay <sexpr>)
+   (access <symbol> <env-sexpr>)
+   (while [<sexpr> ...])
+   (quasiquote <template-sexpr>)
+   (unquote <sexpr>)
+   (unquotesplicing <sexpr>)
 
 ```
 
@@ -313,20 +321,6 @@ A simple BNF for describing lexical items.
    (assq)
 ```
 
-### Transcript Functions
-```
-   (transcript-on)
-   (transcript-off)
-```
-
-### History Functions
-```
-   (add-history)
-   (show-history)
-   (clear-history)
-   (set-prompt)
-```
-
 ### Closure Functions
 ```
    (%closure-code)
@@ -350,16 +344,30 @@ A simple BNF for describing lexical items.
 
 ### Conversion Functions
 ```
-    (list->vector)
-    (vector->list)
-    (list->string)
-    (string->list)
-    (symbol->string)
-    (string->symbol)
-    (integer->char)
-    (char->integer)
-    (integer->string)
-    (string->integer)
+   (list->vector)
+   (vector->list)
+   (list->string)
+   (string->list)
+   (symbol->string)
+   (string->symbol)
+   (integer->char)
+   (char->integer)
+   (integer->string)
+   (string->integer)
+```
+
+### Transcript Functions
+```
+   (transcript-on)
+   (transcript-off)
+```
+
+### History Functions
+```
+   (add-history)
+   (show-history)
+   (clear-history)
+   (set-prompt)
 ```
 
 ### Linux/Unix Functions
