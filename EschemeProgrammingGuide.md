@@ -1,27 +1,48 @@
 escheme Programming Guide
 =========================
 
+## Primitive Types
+
+Escheme supports the following primitive types:
+* characters -- the ascii characer set
+* booleans -- #t, #f
+* fixnums -- 64-bit signed numbers
+* flonums -- double pricision floating point
+* strings -- ascii strings
+* symbols -- with value cell and property list
+* lists -- the principal structured type
+* vectors -- both sexpr and byte vectors
+* environments -- both frame-based and associative
+* primitive functions -- system defined
+* closures -- user constructed with lambda
+* continuations -- execution contexts
+* ports -- including string ports
+* promises -- delayed evaluation
+* code objects -- compiled objects
+* dictionaries -- Python-like dicts
+
 ## Literals
-A simple BNF for describing lexical items.
+A simple EBNF that describes lexical items:
 ```
-   <ascii-char> := manifest
-   <binary-digit> := manifest
-   <quarnary-digit> := manifest
-   <octal-digit> := manifest
-   <decimal-digit> := manifest
-   <hex-digit> := manifest
-   <char> := #\<ascii-char> | #\space | #\newline | #\tab
+   <alpha> := manifest
+   <punct> := manifest
+   <binary-digit> := 0|1
+   <quarnary-digit> := 0..3
+   <octal-digit> := 0..7
+   <decimal-digit> := 0..9
+   <hex-digit> := 0..9 | a..f | A..F
+   <char> := #\<alpha> | #\space | #\newline | #\tab
    <string> := "<char>..."
-   <number> := [(-|+)]<digit>...[.][<digit>...][[(-|+)](e|E)]<digit>...
-   <number> := #\b<binary-digit>... | #\B<binary-digit>...
-   <number> := #\q<quarnary-digit>... | #\Q<quarnary-digit>...
-   <number> := #\o<octal-digit>... | #\O<octal-digit>...
-   <number> := #\d<decimal-digit>... | #\D<decimal-digit>...
-   <number> := #\x<hex-digit>... | #\<hex-digit>...
+   <number> := [(-|+)]{<decimal-digit>}+[.{<decimal-digit>}*][[(-|+)](e|E)]{<decimal-digit}*
+   <number> := #\b{<binary-digit>}+ | #\B{<binary-digit>}+
+   <number> := #\q{<quarnary-digit>}+ | #\Q{<quarnary-digit>}+
+   <number> := #\o{<octal-digit>}+ | #\O{<octal-digit>}+
+   <number> := #\d{<decimal-digit>}+ | #\D{<decimal-digit>}+
+   <number> := #\x{<hex-digit>}+ | #\X{<hex-digit>}+
    <boolean> := #\t | #\f | #!true | #!false
-   <vector> := #([<sexpr>...])
+   <vector> := #({<sexpr>}*)
    <list> := ([<sexpr>...]) | #!null
-   <symbol> := not anything else
+   <symbol> := any non-number string of chars delimited by ' ', '(', ')', '[', ']', ';'
     
 ```
 
@@ -29,11 +50,14 @@ A simple BNF for describing lexical items.
 
 ```
    <sexpr> := any symbolic expression
+   <formal> := <symbol>
+   <rest> := <symbol>
    
    (quote <sexpr>)
    (define <symbol> <sexpr>)
-   (define (<symbol> [<formal>...]) [<sexpr>...])
-   (lambda [(<formal> ... [ . <rest>]) [<sexpr>...])
+   (define (<symbol> {<formal>}*) {<sexpr>}*)
+   <== resume here <================================================
+   (lambda (<formal> . <rest>]) [<sexpr>...])
    (set! <symbol> <sexpr>)
    (set! (access <symbol> <env-sexpr>) <sexpr>)
    (if <condition-sexpr> <then-sexpr> [<else-sexpr>])
@@ -60,34 +84,34 @@ A simple BNF for describing lexical items.
 ### System Functions
 ```
    (exit)
-   (gc)
-   (mm)
-   (fs)
-   (%object-address)
+   (gc) -> <vector>
+   (mm) -> <vector>
+   (fs) -> <vector>
+   (%object-address <object>) -> <fixnum>
 ```
 
 ### List Functions
 ```
-   (car)
-   (cdr)
+   (car <list>) -> <sexpr>
+   (cdr <list>) -> <list>
    (cxxr)
    (cxxxr)
    (cxxxxr)
-   (cons)
-   (list)
-   (list*)
-   (length)
-   (set-car!)
-   (set-cdr!)
-   (append)
-   (reverse)
-   (last-pair)
-   (list-tail)
+   (cons <sexpr1> <sexpr2>) -> (<sexpr1> . <sexpr2>)
+   (list [<sexpr1> <sexpr2> ...]) -> (<sexpr1> <sexpr2> ...)
+   (list* [<sexpr1> <sexpr2> ... <sexprN>]) -> (<sexpr1> <sexpr2> ... . <sexprN>)
+   (length <list>) -> <fixnum>
+   (set-car! (<sexpr1> . <sexpr2>) <newcar>) -> (<newcar> . <sexpr2>)
+   (set-cdr! (<sexpr1> . <sexpr2>) <newcdr>) -> (<sexpr1> . <newcdr>)
+   (append [<list> ...]) -> <list>
+   (reverse <list>) -> <list>
+   (last-pair <list>) -> (<pair> | nil)
+   (list-tail <list> <n>) -> (<list> | nil))
 ```
 
 ### Vector Functions
 ```
-   (vector)
+   (vector {<sexp>}*) -> <vector>)
    (make-vector)
    (vector-ref)
    (vector-set!)
