@@ -105,8 +105,8 @@ A simple EBNF that describes lexical and syntacitcal items:
        [<else-sexpr>])
        
    (cond
-       {({<sexpr>}*)}* [else
-       {<sexpr>}*])
+       {({<sexpr>}*)}*
+       [else {<sexpr>}*])
 	
    (case <sexpr>
        {(({<sexpr>}+) <sexpr>)}*
@@ -114,9 +114,12 @@ A simple EBNF that describes lexical and syntacitcal items:
 ```
 
 ### Short curcuit boolean evaluation
-```   
-   (and {<sexpr>}*)
-   (or {<sexpr>}*)
+```
+   <falsity> := #f | nil
+   <truth> := not <falsity>
+   
+   (and {<sexpr>}*) -> <truth> | <falsity>
+   (or {<sexpr>}*) -> <truth> | <falsity>
 ```
 ### Frame-based environement creation
 ```   
