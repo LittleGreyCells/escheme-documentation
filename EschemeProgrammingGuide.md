@@ -121,21 +121,11 @@ A simple EBNF that describes lexical and syntacitcal items:
 ## Functions
 
 ### System Functions
-Exit escheme.
 ```
    (exit)
-```
-Initiate garbage collection and/or return memory statistics.
-```
    (gc) -> <vector>
    (mm) -> <vector>
-```
-Return current frame store statistics.
-```
    (fs) -> <vector>
-```
-Return an escheme object's address.
-```
    (%object-address <object>) -> <fixnum>
 ```
 
@@ -196,6 +186,18 @@ Return an escheme object's address.
    (all-symbols) -> <symbol-list>
 ```
 
+### Application Control Functions
+```
+   <fn> := any callable
+   
+   (apply <fn> {<sexpr>}+) -> <fn-result-sexpr>
+   (call/cc <fn>) -> <fn-result-sexpr>
+   (eval <sexp> (<env-expr>)) -> <evaluated-sexpr>
+   (map <fn> {<list>}+) -> <list-of-fn-results>
+   (for-each <fn> {<list>}+) -> nil
+   (force <promise>) -> <evaluated-delay-sexpr>
+```
+
 ### I/O Functions
 ```
    (read [<port>]) -> <sexpr>
@@ -206,66 +208,66 @@ Return an escheme object's address.
    (read-char [<port>]) -> <char>
    (write-char <char> [<port>]) -> #t
    (open-input-file <file-path-string>) -> <port>
-   (open-output-file)
-   (open-append-file)
-   (open-update-file)
-   (get-file-position)
-   (set-file-position)
-   (close-port)
-   (close-input-port)
-   (close-output-port)
-   (flush-output)
-   (open-input-string)
-   (open-output-string)
-   (get-output-string)
+   (open-output-file <file-path-string>) -> <port>
+   (open-append-file <file-path-string>) -> <port>
+   (open-update-file <file-path-string>) -> <port>
+   (get-file-position <port>) -> <pos-fixnum>
+   (set-file-position <port> <pos-fixnum>) -> #t
+   (close-port <port>) -> #t
+   (close-input-port <port>) -> #t
+   (close-output-port <port>) -> #t
+   (flush-output <port>) -> #t
+   (open-input-string <string>) -> <string-port>
+   (open-output-string) -> <string-port>
+   (get-output-string <string-port>) -> <string>
 ```
 
 ### Math Functions
 #### Arithmetic
 ```
-   (+)
-   (-)
-   (*)
-   (/)
+   <number> := <fixnum> | <flonum>
+   (+ {<number>}*) -> <number>
+   (- {<number>}+) -> <number>
+   (* {<number>}*) -> <number>
+   (/ {<number>}*) -> <number>
 ```
 #### Logical
 ```
-   (not)
-   (=)
-   (<)
-   (<=)
-   (>)
-   (>=)
+   (not <sexpr>) -> <boolean>
+   (=  {<number>}+) -> <boolean)
+   (<  {<number>}+) -> <boolean)
+   (<= {<number>}+) -> <boolean)
+   (>  {<number>}+) -> <boolean)
+   (>= {<number>}+) -> <boolean)
 ```
 #### Miscellaneous
 ```
-   (truncate)
-   (floor)
-   (ceiling)
-   (round)
-   (1+)
-   (1-)
-   (-1+)
-   (inc)
-   (dec)
-   (abs)
-   (gcd)
-   (random)
-   (quotient)
-   (remainder)
-   (min)
-   (max)
-   (logand)
-   (logior)
-   (logxor)
-   (lognot)
-   (shift-right)
-   (shift-left)
-   (shift-right-arithmetic)
+   (truncate <number>) -> <fixnum>
+   (floor <number>) -> <fixnum>
+   (ceiling <number>) -> <fixnum>
+   (round <number>) -> <fixnum>
+   (1+ <number>) -> <number>
+   (1- <number>) -> <number>
+   (-1+ <number>) -> <number>
+   (inc <number>) -> <number>
+   (dec <number>) -> <number>
+   (abs <number>) -> <number>
+   (gcd {<fixnum>}*) -> <fixnum>
+   (random <fixnum>) -> <fixnum>
+   (quotient {<fixnum>}+) -> <fixnum>
+   (remainder {<fixnum>}+) -> <fixnum>
+   (min {<fixnum>}+) -> <fixnum>
+   (max {<fixnum>}+) -> <fixnum>
+   (logand {<fixnum>}+) -> <fixnum>
+   (logior {<fixnum>}+) -> <fixnum>
+   (logxor {<fixnum>}+) -> <fixnum>
+   (lognot <fixnum>) -> <fixnum>
+   (shift-right <fixnum> <count-fixnum>) -> <fixnum>
+   (shift-left <fixnum> <count-fixnum>) -> <fixnum>
+   (shift-right-arithmetic <fixnum> <count-fixnum>) -> <fixnum>
 ```
 
 ### Environment Functions
-#### Frame-based
 ```
    (the-environment)
    (procedure-environment)
@@ -273,10 +275,6 @@ Return an escheme object's address.
    (environment-parent)
    (%make-environment)
    (the-global-environment)
-```
-
-#### Associative
-```
    (%make-assoc-env)
    (%assoc-env-has?)
    (%assoc-env-ref)
