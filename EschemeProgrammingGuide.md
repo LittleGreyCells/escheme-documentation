@@ -64,32 +64,55 @@ A simple EBNF that describes lexical and syntacitcal items:
    (quote <sexpr>)
    (delay <sexpr>)
 ```
+
 ### Symbol definition
 ```   
    <formal> := <symbol>
    <rest> := <symbol>
+   
    (define <symbol> <sexpr>)
-   (define (<symbol> {<formal>}*) {<sexpr>}*)
-   (define (<symbol> {<formal>}+ . <rest>) {<sexpr>}*)
-```   
+   
+   (define (<symbol> {<formal>}*)
+       {<sexpr>}*)
+       
+   (define (<symbol> {<formal>}+ . <rest>)
+       {<sexpr>}*)
+```
+
 ### Closure construction
 ```   
-   (lambda <formal> {<sexpr>}*)
-   (lambda ({<formal>}*) {<sexpr>}*)
-   (lambda ({<formal>}+ . <rest>) {<sexpr>}*)
-```   
+   (lambda <formal>
+       {<sexpr>}*)
+       
+   (lambda ({<formal>}*)
+       {<sexpr>}*)
+       
+   (lambda ({<formal>}+ . <rest>)
+       {<sexpr>}*)
+```
+
 ### Symbol accessing and setting
 ```   
    (access <symbol> <env-sexpr>)
    (set! <symbol> <sexpr>)
    (set! (access <symbol> <env-sexpr>) <sexpr>)
 ```
+
 ### Conditional evaluation
 ```   
-   (if <condition-sexpr> <then-sexpr> [<else-sexpr>])
-   (cond {({<sexpr>}*)}* [else {<sexpr>}*])
-   (case <sexpr> {(({<sexpr>}+) <sexpr>)}* [else {<sexpr>}+])
+   (if <condition-sexpr>
+       <then-sexpr>
+       [<else-sexpr>])
+       
+   (cond
+       {({<sexpr>}*)}* [else
+       {<sexpr>}*])
+	
+   (case <sexpr>
+       {(({<sexpr>}+) <sexpr>)}*
+       [else {<sexpr>}+])
 ```
+
 ### Short curcuit boolean evaluation
 ```   
    (and {<sexpr>}*)
@@ -97,20 +120,32 @@ A simple EBNF that describes lexical and syntacitcal items:
 ```
 ### Frame-based environement creation
 ```   
-   (let {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
-   (let* {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
-   (letrec {(<symbol> | (<symbol> <expr>))}+ {<sexpr>}*)
+   (let {(<symbol> | (<symbol> <expr>))}+
+       {<sexpr>}*)
+       
+   (let* {(<symbol> | (<symbol> <expr>))}+
+       {<sexpr>}*)
+       
+   (letrec {(<symbol> | (<symbol> <expr>))}+
+       {<sexpr>}*)
 ```
+
 ### Sequence evaluation
 ```   
    (sequence {<sexpr>}*)	
    (begin {<sexpr>}*)
 ```
+
 ### Looping
 ```
-   (do ({(<symbol> <init-sexpr> <step-sexpr>)}+) (<test-sexpr> {<sexpr>}+) {<sexpr>}+)
-   (while {<sexpr>}*)
+   (do ({(<symbol> <init-sexpr> <step-sexpr>)}+)
+       (<test-sexpr> {<sexpr>}+)
+       {<sexpr>}+)
+       
+   (while <condition-sexpr>
+       {<sexpr>}*)
 ```
+
 ### Template expansion
 ```
    (quasiquote <template-sexpr>)
@@ -133,9 +168,9 @@ A simple EBNF that describes lexical and syntacitcal items:
 ```
    (car <list>) -> <head>
    (cdr <list>) -> <tail>
-   (cxyr <sexpr>) -> (cxr (cyr <sexpr>)) where x/y = {a,d}
-   (cxyzr <sexpr>) -> (cxr (cyr (czr <sexpr>))) where x/y/z in {a,d}
-   (cxyzwr <sexpr>) ->  (cxr (cyr (czr (cwr <sexpr>)))) where x/y/z/w in {a,d}
+   (cxyr <sexpr>) -> (cxr (cyr <sexpr>)) where xy permute {a,d}
+   (cxyzr <sexpr>) -> (cxr (cyr (czr <sexpr>))) where xyz permute {a,d}
+   (cxyzwr <sexpr>) ->  (cxr (cyr (czr (cwr <sexpr>)))) where xyzw permute {a,d}
    (cons <sexpr1> <sexpr2>) -> (<sexpr1> . <sexpr2>)
    (list {<sexpr>}*) -> <list>
    (list* {<sexpr>}*) -> <list>
@@ -226,6 +261,7 @@ A simple EBNF that describes lexical and syntacitcal items:
 #### Arithmetic
 ```
    <number> := <fixnum> | <flonum>
+   
    (+ {<number>}*) -> <number>
    (- {<number>}+) -> <number>
    (* {<number>}*) -> <number>
@@ -269,118 +305,121 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Environment Functions
 ```
-   (the-environment)
-   (procedure-environment)
-   (environment-bindings)
-   (environment-parent)
-   (%make-environment)
-   (the-global-environment)
-   (%make-assoc-env)
-   (%assoc-env-has?)
-   (%assoc-env-ref)
-   (%assoc-env-set!)
+   <binding> := (<symbol> . <value-sexpr>)
+   <bindings> := ({<binding>}*)
+   
+   (the-environment) -> <env>
+   (procedure-environment <closure>) -> <env>
+   (environment-bindings <env>) -> <bindings>
+   (environment-parent <env>) -> <env>
+   (%make-environment <bindings> <parent-env>) -> <env>
+   (the-global-environment) -> <null-env>
+   (%make-assoc-env [<parent-env>]) -> <assoc-env>
+   (%assoc-env-has? <assoc-env> <symbol>) -> <boolean>
+   (%assoc-env-ref <assoc-env> <symbol>) -> <value-sexpr>
+   (%assoc-env-set! <assoc-env> <symbol> <value-sexpr>) -> <value-sexpr>
 ```
 
-### Byte Code Functions
+### Byte Code Functions (Compiled)
 ```
-   (%make-code)
-   (%get-bcodes)
-   (%get-sexprs)
-   (assemble)
-   (disassemble)
+   (%make-code <byte-vector> <sexpr-vector>) -> <code>
+   (%get-bcodes <code>) -> <byte-vector>
+   (%get-sexprs <code>) -> <sexpr-vector>
+   (compile <sexpr> [<env>]) -> <code>
+   (disassemble <code>) -> nil
 ```
 
 ### Predicate Functions
 ```
-   (null?)
-   (atom?)
-   (list?)
-   (number?)
-   (boolean?)
-   (pair?)
-   (symbol?)
-   (real?)
-   (integer?)
-   (char?)
-   (string?)
-   (vector?)
-   (byte-vector?)
-   (closure?)
-   (procedure?)
-   (environment?)
-   (continuation?)
-   (port?)
-   (input-port?)
-   (output-port?)
-   (string-port?)
-   (input-string-port?)
-   (output-string-port?)
-   (eof-object?)
-   (zero?)
-   (positive?)
-   (negative?)
-   (odd?)
-   (even?)
-   (exact?)
-   (inexact?)
-   (promise?)
-   (code?)
-   (string-null?)
-   (dict?)
-   (assoc-env?)
+   (null? <object>) -> <boolean>
+   (atom? <object>) -> <boolean>
+   (list? <object>) -> <boolean>
+   (number? <object>) -> <boolean>
+   (boolean? <object>) -> <boolean>
+   (pair? <object>) -> <boolean>
+   (symbol? <object>) -> <boolean>
+   (real? <object>) -> <boolean>
+   (integer? <object>) -> <boolean>
+   (char? <object>) -> <boolean>
+   (string? <object>) -> <boolean>
+   (vector? <object>) -> <boolean>
+   (byte-vector? <object>) -> <boolean>
+   (closure? <object>) -> <boolean>
+   (procedure? <object>) -> <boolean>
+   (environment? <object>) -> <boolean>
+   (continuation? <object>) -> <boolean>
+   (port? <object>) -> <boolean>
+   (input-port? <object>) -> <boolean>
+   (output-port? <object>) -> <boolean>
+   (string-port? <object>) -> <boolean>
+   (input-string-port? <object>) -> <boolean>
+   (output-string-port? <object>) -> <boolean>
+   (eof-object? <object>) -> <boolean>
+   (zero? <object>) -> <boolean>
+   (positive? <object>) -> <boolean>
+   (negative? <object>) -> <boolean>
+   (odd? <object>) -> <boolean>
+   (even? <object>) -> <boolean>
+   (exact? <object>) -> <boolean>
+   (inexact? <object>) -> <boolean>
+   (promise? <object>) -> <boolean>
+   (code? <object>) -> <boolean>
+   (string-null? <object>) -> <boolean>
+   (dict? <object>) -> <boolean>
+   (assoc-env? <object>) -> <boolean>
 ```
 
 ### String Functions
 ```
-   (make-string)
-   (string-length)
-   (string-append)
-   (string-ref)
-   (string-set!)
-   (string-fill!)
-   (string-copy!)
-   (substring)
-   (string-find)
-   (string-dup)
-   (string-trim)
-   (string-trim-left)
-   (string-trim-right)
-   (string-downcase!)
-   (string-upcase!)
-   (string-pad-left)
-   (string-pad-right)
-   (string=?)
-   (string<?)
-   (string<=?)
-   (string>?)
-   (string>=?)
-   (string-ci=?)
-   (string-ci<?)
-   (string-ci<=?)
-   (string-ci>?)
-   (string-ci>=?)
+   (make-string <length> [<char>]) -> <string>
+   (string-length <string>) -> <fixnum>
+   (string-append {<string>}*) -> <string>
+   (string-ref <string> <index>) -> <char>
+   (string-set! <string> <index> <char>) -> <char>
+   (string-fill! <string> <char>) -> <string>)
+   (string-copy! <dest-string> <dest-start> <src-string> [<src-start> <src-end>]) -> <dest-string>
+   (substring <string> <start> <end>) -> <string>
+   (string-find <string1> <string22> [<start> [<end>]]) -> (<fixnum> | nil)
+   (string-dup <string>) -> <string>
+   (string-trim <string1> [<string2>]) -> <string>
+   (string-trim-left <string1> [<string2>]) -> <string>
+   (string-trim-right <string1> [<string2>]) -> <string>
+   (string-downcase! <string>) -> <string>
+   (string-upcase! <string>) -> <string>
+   (string-pad-left <string> <k> [<char>]) -> <string>
+   (string-pad-right <string> <k> [<char>]) -> <string>
+   (string=? <string1> <string2>) -> <boolean>
+   (string<? <string1> <string2>) -> <boolean>
+   (string<=? <string1> <string2>) -> <boolean>
+   (string>? <string1> <string2>) -> <boolean>
+   (string>=? <string1> <string2>) -> <boolean>
+   (string-ci=? <string1> <string2>) -> <boolean>
+   (string-ci<? <string1> <string2>) -> <boolean>
+   (string-ci<=? <string1> <string2>) -> <boolean>
+   (string-ci>? <string1> <string2>) -> <boolean>
+   (string-ci>=? <string1> <string2>) -> <boolean>
 
 ```
 
 ### Character Functions
 ```
-   (char=?)
-   (char<?)
-   (char<=?)
-   (char>?)
-   (char>=?)
-   (char-ci=?)
-   (char-ci<?)
-   (char-ci<=?)
-   (char-ci>?)
-   (char-ci>=?)
-   (char-alphabetic?)
-   (char-numeric?)
-   (char-whitespace?)
-   (char-upper-case?)
-   (char-lower-case?)
-   (char-upcase)
-   (char-downcase)
+   (char=? <char1> <char2>) -> <boolean>
+   (char<? <char1> <char2>) -> <boolean>
+   (char<=? <char1> <char2>) -> <boolean>
+   (char>? <char1> <char2>) -> <boolean>
+   (char>=? <char1> <char2>) -> <boolean>
+   (char-ci=? <char1> <char2>) -> <boolean>
+   (char-ci<? <char1> <char2>) -> <boolean>
+   (char-ci<=? <char1> <char2>) -> <boolean>
+   (char-ci>? <char1> <char2>) -> <boolean>
+   (char-ci>=? <char1> <char2>) -> <boolean>
+   (char-alphabetic? <char>) -> <boolean>
+   (char-numeric? <char>) -> <boolean>
+   (char-whitespace? <char>) -> <boolean>
+   (char-upper-case? <char>) -> <boolean>
+   (char-lower-case? <char>) -> <boolean>
+   (char-upcase <char>) -> <char>
+   (char-downcase <char>) -> <char>
 ```
 
 ### Equality Functions
@@ -390,24 +429,28 @@ A simple EBNF that describes lexical and syntacitcal items:
    (equal? <sexpr1> <sexpr2>) -> <boolean>
 ```
 
-### Member Functions
+### Member/Association List Functions
 ```
-   (member)
-   (memv)
-   (memq)
-   (assoc)
-   (assv)
-   (assq)
+   <pair> := (<key-sexpr> . <value-sexpr)
+   <alist> := ({<pair>}*)
+   
+   (member <sexpr> <list>) -> (<sexpr> | nil)
+   (memq <sexpr> <list>) -> (<sexpr> | nil)
+   (memv <sexpr> <list>) -> (<sexpr> | nil)
+   (assoc <key-sexpr> <alist>) -> (<pair> | nil)
+   (assq <key-sexpr> <alist>) -> (<pair> | nil)
+   (assv <key-sexpr> <alist>) -> (<pair> | nil)
 ```
 
 ### Closure Functions
 ```
-   (%closure-code)
-   (%closure-benv)
-   (%closure-vars)
-   (%closure-numv)
-   (%closure-rest)
-   (%closure-code-set!)
+   (%closure-benv <closure>) -> <env>
+   (%closure-numv <closure>) -> <fixnum>
+   (%closure-rest <closure>) -> <boolean>
+   (%closure-vars <closure>) -> <list>
+   (%closure-code <closure>) -> <list>                  ;; interpreted
+   (%closure-code <closure>) -> <code>                  ;; compiled
+   (%closure-code-set! <closure> <code>) -> <closure>   ;; compiled
 ```
 
 ### Dictionary Functions
@@ -437,48 +480,62 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Transcript Functions
 ```
-   (transcript-on)
-   (transcript-off)
+   (transcript-on [<file-name-string>]) -> #t
+   (transcript-off) -> #t
 ```
 
 ### History Functions
 ```
-   (add-history)
-   (show-history)
-   (clear-history)
-   (set-prompt)
+   (add-history <sexpr>) -> #t
+   (show-history) -> #t
+   (clear-history) -> #t
+   (set-prompt) -> #t
 ```
 
 ### Linux/Unix Functions
 ```
-   (system)
-   (getargs)
-   (getenv)
-   (setenv)
-   (unsetenv)
-   (gettime)
-   (chdir)
-   (getcwd)
-   (getenv)
+   (system <string>) -> <return-code-fixnum>
+   (getargs) -> #({<string>}+)
+   (getenv <var-string>) -> <val-string>
+   (setenv <var-string> <val-string>) -> <return-code-fixnum>
+   (unsetenv <var-string>) -> <fixnum>
+   (gettime) -> (<seconds-fixnum> . <nanoseconds-fixnum>)
+   (chdir <string>) -> <return-code-fixnum>
+   (getcwd) -> <string>
+   (getenv <var-string>) -> <val-string>
 ```
 
 ### Socket Functions
 ```
-   (socket-read)
-   (socket-write)
-   (socket-recvfrom)
-   (socket-recv)
-   (socket-sendto)
-   (socket-create-tcp)
-   (socket-create-udp)
-   (socket-bind)
-   (socket-bind-address)
-   (socket-create-address)
-   (socket-listen)
-   (socket-accept)
-   (socket-connect)
-   (socket-disconnect)
-   (socket-close)
-   (read-select)
+   <sockfd> := <fixnum>
+   <numbytes> := <fixnum>
+   <from-addr> := <fixnum>
+   <to-addr> := <fixnum>
+   <server-flag> := <fixnum>
+   <backlog> := <fixnum>
+   <server-host-addr> := <string>
+   <host-addr> := <string>
+   <address> := <fixnum>
+   <server-port> := <fixnum>
+   <numtries> := <fixnum>
+   <fd-list> := <list>
+   <ready-list> := <list>
+   
+   (socket-read <sockfd> [<numbytes>]) -> <byte-vector>
+   (socket-write <sockfd> <byte-vector>) -> <fixnum>
+   (socket-recvfrom <sockfd> <numbytes> <from-addr>) -> <byte-vector>
+   (socket-recv <sockfd> <numbytes>) -> <byte-vector>
+   (socket-sendto <sockfd> <byte-vector> <to-addr>) -> <fixnum>
+   (socket-create-tcp [<server-flag>]) -> <sockfd>
+   (socket-create-udp) -> <sockfd>
+   (socket-bind <sockfd> <host-addr> <port> ) -> <sockfd>
+   (socket-bind-address <sockfd> <address> ) -> <sockfd>
+   (socket-create-address <host-addr> <port> ) -> <address>
+   (socket-listen <sockfd> [<backlog>]) -> <fixnum>
+   (socket-accept <sockfd>) -> <sockfd>
+   (socket-connect <sockfd> <server-host-addr> <server-port> [<numtries>=1] ) -> <sockfd>
+   (socket-disconnect <sockfd>) -> <fixnum>
+   (socket-close <sockfd>) -> <fixnum>
+   (read-select <fd-list>) --> <ready-list>
 ```
 
