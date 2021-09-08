@@ -34,25 +34,27 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ## Literals
 ```
-   <sexpr> := any symbolic expression
+   <char> := ascii character set 
    <alpha> := ascii alpha characters
    <punct> := ascii punctuation characters
+   <numeric> := ascii numeric characters
    <binary-digit> := 0|1
    <quarnary-digit> := 0..3
    <octal-digit> := 0..7
    <decimal-digit> := 0..9
    <hex-digit> := 0..9 | a..f | A..F
-   <char> := #\<alpha> | #\space | #\newline | #\tab
+   <special> := #\space | #\newline | #\tab | #t | #f | #!true | #!false | #!null
    <string> := "{<char>}*"
-   <number> := [(-|+)]{<decimal-digit>}+[.{<decimal-digit>}*][[(-|+)](e|E)]{<decimal-digit}*
+   <number> := [(-|+)]{<decimal-digit>}+[.{<decimal-digit>}*][[(-|+)](e|E)]{<decimal-digit>}*
    <number> := #\b{<binary-digit>}+ | #\B{<binary-digit>}+
    <number> := #\q{<quarnary-digit>}+ | #\Q{<quarnary-digit>}+
    <number> := #\o{<octal-digit>}+ | #\O{<octal-digit>}+
    <number> := #\d{<decimal-digit>}+ | #\D{<decimal-digit>}+
    <number> := #\x{<hex-digit>}+ | #\X{<hex-digit>}+
-   <boolean> := #\t | #\f | #!true | #!false
+   <boolean> := #t | #f
+   <sexpr> := any symbolic expression
    <vector> := #({<sexpr>}*)
-   <list> := ({<sexpr>}*) | #!null
+   <list> := ({<sexpr>}*)
    <symbol> := any non-number string of chars delimited by ' ', '(', ')', '[', ']', ';'
     
 ```
@@ -542,3 +544,90 @@ A simple EBNF that describes lexical and syntacitcal items:
    (read-select <fd-list>) --> <ready-list>
 ```
 
+## Extensions
+
+### Module System
+A module system fashioned after the STklos module system. See escheme-extensions/ems.
+
+```
+   (module <module-name> {<sexpr>}* )   -> <module-name>      (macro)
+   (export {<symbol>*})                 -> nil                (macro)
+   (import {<module-name>}*)            -> nil                (macro)
+
+   (all-modules)                        -> <assoc-list>       (function)
+   (find-module <module-name>)          -> <module>           (function)
+   (current-module)                     -> <module>           (function)
+   (module-name <module>)               -> <symbol>           (function)
+   (module-imports <module>)            -> <module-name-list> (function)
+   (module-exports <module>)            -> <symbol-list>      (function)
+   (module-symbols <module>)            -> <symbol-list>      (function)
+   (imported-symbol? <symbol> <module>) -> <boolean>          (function)
+
+   (symbol-value <symbol> <module> [<default>])  -> <sexpr>   (function)
+   (symbol-value* <symbol> <module> [<default>]) -> <sexpr>   (function)
+   (in-module <module-name> <symbol>)            -> <sexpr>   (function)
+
+   (select-module <module-name>)                              (macro)
+```
+
+### Escheme Object System
+An object system fashioned after Dylan. See escheme-extensions/eos.
+
+```
+   (define-class <name> <base-type> <slots>)   -> <name>     (macro)
+    
+   (define-generic-function <name> <formals>) -> <gfunction> (macro)
+   (define-function <name> <formals> <body>)  -> <function>  (macro)
+   (function <formals> <body>)                -> <function>  (macro)
+    
+   (make <type> {(<slot-name> <value>)}*)     -> <instance>  (macro)
+    
+   (slot-ref <slot-name> <instance>)          -> <value>     (macro)
+   (slot-set! <slot-name> <instance> <value>) -> <value>     (macro)
+
+   Where:
+      <name> := <symbol>
+      <base-type> := <class-name> 
+      <sexpr> := escheme symbolic expression
+      <value> := <sexpr>
+      <slot> := ( <slot-name> <type> [<value-guard>]) | <slot-name>
+      <slots> := {<slot>}*
+      <gfunction> := <closure>
+      <function> := <closure>
+      <type> := name of eos class type
+      <slot-name> := <symbol>
+      <value-guard> := predicate function
+      <formals> := (<formal> ...)
+      <formal> := (<name> <type>) | <name>
+      <body> := {<sexpr>*}
+      <instance> := eos class type instance
+    
+```
+
+### "X" Object System
+An object system fashioned after xscheme's. See escheme-extensions/xos.
+
+```
+   (class 'new '<ivars> ['<cvars> [<super>]])      -> <class>    (function)
+     
+   (<class> 'new [<arg>...])                       -> <instance> (function)
+   (<class> 'method '<selector> '<params> '<body>) -> <selector> (function)
+     
+   (slot-ref <instance> '<var>)                    -> <value>    (function)
+   (slot-set! <instance> '<var> <value>)           -> <value>    (function)
+   (<class> 'method 'init '<params> '<body>)       -> init       (function)
+     
+   (send-super '<selector> [<arg>...])             -> <sexpr>    (macro)
+
+   Where:
+      <ivars> := <symbol-list>
+      <cvars> := <symbol-list>
+      <super> := <class>
+      <class> := <closure>
+      <arg>   := <sexpr>
+      <instance> := <closure>
+      <params> := <symbol-list>
+      <body> := <sexpr-list>
+      <var> := <symbol>
+      <value> := <sexpr>
+```
