@@ -119,12 +119,8 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Short curcuit boolean evaluation
 ```
-   (and {<sexpr>}*) -> <truth> | <falsity>
-   (or {<sexpr>}*) -> <truth> | <falsity>
-
-   Where:
-     <falsity> := #f | nil
-     <truth> := not <falsity>
+   (and {<sexpr>}*)
+   (or {<sexpr>}*)
 ```
 ### Frame-based environement creation
 ```   
