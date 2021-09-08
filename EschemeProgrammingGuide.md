@@ -35,15 +35,6 @@ A simple EBNF that describes lexical and syntacitcal items:
 ## Literals
 ```
    <char> := ascii character set 
-   <alpha> := ascii alpha characters
-   <punct> := ascii punctuation characters
-   <numeric> := ascii numeric characters
-   <binary-digit> := 0|1
-   <quarnary-digit> := 0..3
-   <octal-digit> := 0..7
-   <decimal-digit> := 0..9
-   <hex-digit> := 0..9 | a..f | A..F
-   <special> := #\space | #\newline | #\tab | #t | #f | #!true | #!false | #!null
    <string> := "{<char>}*"
    <number> := [(-|+)]{<decimal-digit>}+[.{<decimal-digit>}*][[(-|+)](e|E)]{<decimal-digit>}*
    <number> := #\b{<binary-digit>}+ | #\B{<binary-digit>}+
@@ -52,11 +43,21 @@ A simple EBNF that describes lexical and syntacitcal items:
    <number> := #\d{<decimal-digit>}+ | #\D{<decimal-digit>}+
    <number> := #\x{<hex-digit>}+ | #\X{<hex-digit>}+
    <boolean> := #t | #f
-   <sexpr> := any symbolic expression
+   <symbol> := any non-number string of chars delimited by ' ', '(', ')', '[', ']', ';'
+   <special> := #\space | #\newline | #\tab | #t | #f | #!true | #!false | #!null
    <vector> := #({<sexpr>}*)
    <list> := ({<sexpr>}*)
-   <symbol> := any non-number string of chars delimited by ' ', '(', ')', '[', ']', ';'
-    
+
+   Where:
+     <alpha> := ascii alpha characters
+     <punct> := ascii punctuation characters
+     <numeric> := ascii numeric characters
+     <binary-digit> := 0|1
+     <quarnary-digit> := 0..3
+     <octal-digit> := 0..7
+     <decimal-digit> := 0..9
+     <hex-digit> := 0..9 | a..f | A..F
+     <sexpr> := any symbolic expression
 ```
 
 ## Special Forms
@@ -69,9 +70,6 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Symbol definition
 ```   
-   <formal> := <symbol>
-   <rest> := <symbol>
-   
    (define <symbol> <sexpr>)
    
    (define (<symbol> {<formal>}*)
@@ -79,6 +77,10 @@ A simple EBNF that describes lexical and syntacitcal items:
        
    (define (<symbol> {<formal>}+ . <rest>)
        {<sexpr>}*)
+
+   Where:
+     <formal> := <symbol>
+     <rest> := <symbol>
 ```
 
 ### Closure construction
@@ -117,11 +119,12 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Short curcuit boolean evaluation
 ```
-   <falsity> := #f | nil
-   <truth> := not <falsity>
-   
    (and {<sexpr>}*) -> <truth> | <falsity>
    (or {<sexpr>}*) -> <truth> | <falsity>
+
+   Where:
+     <falsity> := #f | nil
+     <truth> := not <falsity>
 ```
 ### Frame-based environement creation
 ```   
@@ -210,10 +213,6 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Symbol Functions
 ```
-   <plist> := ({<propery-sexpr> <property-value-sexpr>}*)
-   <property> := <sexpr>
-   <property-value> := <sexpr>
-   
    (gensym (<symbol>|<string>|<fixnum>)) -> <symbol>
    (%symbol-value <symbol>) -> <value-sexpr>
    (%set-symbol-value! <symbol> <value-sexpr>) -> <value-sexpr>
@@ -224,18 +223,24 @@ A simple EBNF that describes lexical and syntacitcal items:
    (remprop <symbol> <property>) -> <property-value>
    (bound? <symbol>) -> <boolean>
    (all-symbols) -> <symbol-list>
+
+   Where:
+     <plist> := ({<propery-sexpr> <property-value-sexpr>}*)
+     <property> := <sexpr>
+     <property-value> := <sexpr>
 ```
 
 ### Application Control Functions
 ```
-   <fn> := any callable
-   
    (apply <fn> {<sexpr>}+) -> <fn-result-sexpr>
    (call/cc <fn>) -> <fn-result-sexpr>
    (eval <sexp> (<env-expr>)) -> <evaluated-sexpr>
    (map <fn> {<list>}+) -> <list-of-fn-results>
    (for-each <fn> {<list>}+) -> nil
    (force <promise>) -> <evaluated-delay-sexpr>
+
+   Where:
+     <fn> := any callable
 ```
 
 ### I/O Functions
@@ -265,8 +270,6 @@ A simple EBNF that describes lexical and syntacitcal items:
 ### Math Functions
 #### Arithmetic
 ```
-   <number> := <fixnum> | <flonum>
-   
    (+ {<number>}*) -> <number>
    (- {<number>}+) -> <number>
    (* {<number>}*) -> <number>
@@ -310,9 +313,6 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Environment Functions
 ```
-   <binding> := (<symbol> . <value-sexpr>)
-   <bindings> := ({<binding>}*)
-   
    (the-environment) -> <env>
    (procedure-environment <closure>) -> <env>
    (environment-bindings <env>) -> <bindings>
@@ -323,6 +323,11 @@ A simple EBNF that describes lexical and syntacitcal items:
    (%assoc-env-has? <assoc-env> <symbol>) -> <boolean>
    (%assoc-env-ref <assoc-env> <symbol>) -> <value-sexpr>
    (%assoc-env-set! <assoc-env> <symbol> <value-sexpr>) -> <value-sexpr>
+
+   Where:
+     <binding> := (<symbol> . <value-sexpr>)
+     <bindings> := ({<binding>}*)
+   
 ```
 
 ### Byte Code Functions (Compiled)
@@ -436,15 +441,16 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Member/Association List Functions
 ```
-   <pair> := (<key-sexpr> . <value-sexpr)
-   <alist> := ({<pair>}*)
-   
    (member <sexpr> <list>) -> (<sexpr> | nil)
    (memq <sexpr> <list>) -> (<sexpr> | nil)
    (memv <sexpr> <list>) -> (<sexpr> | nil)
    (assoc <key-sexpr> <alist>) -> (<pair> | nil)
    (assq <key-sexpr> <alist>) -> (<pair> | nil)
    (assv <key-sexpr> <alist>) -> (<pair> | nil)
+
+   Where:
+     <pair> := (<key-sexpr> . <value-sexpr)
+     <alist> := ({<pair>}*)   
 ```
 
 ### Closure Functions
@@ -512,20 +518,6 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ### Socket Functions
 ```
-   <sockfd> := <fixnum>
-   <numbytes> := <fixnum>
-   <from-addr> := <fixnum>
-   <to-addr> := <fixnum>
-   <server-flag> := <fixnum>
-   <backlog> := <fixnum>
-   <server-host-addr> := <string>
-   <host-addr> := <string>
-   <address> := <fixnum>
-   <server-port> := <fixnum>
-   <numtries> := <fixnum>
-   <fd-list> := <list>
-   <ready-list> := <list>
-   
    (socket-read <sockfd> [<numbytes>]) -> <byte-vector>
    (socket-write <sockfd> <byte-vector>) -> <fixnum>
    (socket-recvfrom <sockfd> <numbytes> <from-addr>) -> <byte-vector>
@@ -542,6 +534,21 @@ A simple EBNF that describes lexical and syntacitcal items:
    (socket-disconnect <sockfd>) -> <fixnum>
    (socket-close <sockfd>) -> <fixnum>
    (read-select <fd-list>) --> <ready-list>
+
+   Where:
+     <sockfd> := <fixnum>
+     <numbytes> := <fixnum>
+     <from-addr> := <fixnum>
+     <to-addr> := <fixnum>
+     <server-flag> := <fixnum>
+     <backlog> := <fixnum>
+     <server-host-addr> := <string>
+     <host-addr> := <string>
+     <address> := <fixnum>
+     <server-port> := <fixnum>
+     <numtries> := <fixnum>
+     <fd-list> := <list>
+     <ready-list> := <list>   
 ```
 
 ## Extensions
@@ -568,6 +575,10 @@ A module system fashioned after the STklos module system. See escheme-extensions
    (in-module <module-name> <symbol>)            -> <sexpr>   (function)
 
    (select-module <module-name>)                              (macro)
+
+   Where:
+      <module-name> := <symbol>
+      
 ```
 
 ### Escheme Object System
