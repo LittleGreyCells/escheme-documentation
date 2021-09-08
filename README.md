@@ -1,2 +1,3 @@
-# escheme-documentation
-escheme documentation covering acknowledgements, conformance, functions, macros and bindings 
+# escheme Documentation
+
+Documentation covering acknowledgements, conformance, functions, macros and bindings 
