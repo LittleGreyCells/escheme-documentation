@@ -16,7 +16,7 @@ Escheme supports the following primitive types:
 * primitive functions -- system defined
 * closures -- user constructed with lambda
 * continuations -- execution contexts
-* ports -- strea, input/output/update including strings
+* ports -- stream input/output/update including strings
 * promises -- delayed evaluation
 * code objects -- compiled objects
 * dictionaries -- python-like dicts where any object can be a key
@@ -129,7 +129,7 @@ The third form accepts one or more actuals and binds a list of the remainder to 
    (and {<sexpr>}*)
    (or {<sexpr>}*)
 ```
-_#f_ and _nil_ are considered false. All other values are considered true.
+#f and nil are considered false. All other values are considered true.
 
 ### Frame-based environement creation
 ```   
@@ -158,7 +158,7 @@ _#f_ and _nil_ are considered false. All other values are considered true.
    (while <condition-sexpr>
        {<sexpr>}*)
 ```
-Although tail-recursion is the natural and efficient way to implementing looping, two additional forms are provided.
+Although tail-recursion is the natural and efficient way to implement looping, two additional forms are provided.
 
 ### Template expansion
 ```
@@ -178,11 +178,23 @@ Unquote substitutes the result of the evaluation. If the result of evaluation is
 ```
 Exit the interpreter with the exit function or type ^D or ^C.
 
+### Application Dispatch Functions
+```
+   (<primitive> {<args>}*)
+   (call/cc <expr>)
+   (apply <fn> <list>)
+   (eval <expr> [<env>])
+   (<continuation> [<value>])
+   (<closure> ...)
+   (map <func> <list>)
+   (foreach <func> <list>)
+   (force <promise>)
+```
 
 ### List Functions
 ```
-   (car <list>) -> <cons-cell-sexpr1>
-   (cdr <list>) -> <cons-cell-sexpr2>
+   (car <list>) -> <pair-sexpr1>
+   (cdr <list>) -> <pair-sexpr2>
    (cxyr <sexpr>) -> (cxr (cyr <sexpr>)) where xy permute {a,d}
    (cxyzr <sexpr>) -> (cxr (cyr (czr <sexpr>))) where xyz permute {a,d}
    (cxyzwr <sexpr>) ->  (cxr (cyr (czr (cwr <sexpr>)))) where xyzw permute {a,d}
@@ -240,7 +252,7 @@ Exit the interpreter with the exit function or type ^D or ^C.
 ### Application Control Functions
 ```
    (apply <fn> {<sexpr>}+) -> <fn-result-sexpr>
-   (call/cc <fn>) -> <fn-result-sexpr>
+   (call/cc <closure>) -> <fn-result-sexpr>
    (eval <sexp> (<env-expr>)) -> <evaluated-sexpr>
    (map <fn> {<list>}+) -> <list-of-fn-results>
    (for-each <fn> {<list>}+) -> nil
