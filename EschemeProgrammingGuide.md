@@ -5,18 +5,18 @@ escheme Programming Guide
 
 Escheme supports the following primitive types:
 * characters -- the ascii characer set
-* booleans -- #t, #f
+* booleans -- _#t_, _#f_
 * fixnums -- 64-bit signed numbers
 * flonums -- double precision floating point
 * strings -- ascii strings
 * symbols -- with value cell and property list
 * lists -- the principal structured type
-* vectors -- both sexpr and byte vectors
+* vectors -- both symbolic expression and byte vectors
 * environments -- both frame-based and associative
 * primitive functions -- system defined
 * closures -- user constructed with lambda
 * continuations -- execution contexts
-* ports -- in/out/inout including string ports
+* ports -- _in/out/inout_ including string ports
 * promises -- delayed evaluation
 * code objects -- compiled objects
 * dictionaries -- python-like dicts where any object can be a key
