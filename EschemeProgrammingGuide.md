@@ -1,4 +1,4 @@
-escheme programming guide
+escheme Programming Guide
 =========================
 
 ## Primitive Types
