@@ -67,7 +67,7 @@ A simple EBNF that describes lexical and syntacitcal items:
    (quote <sexpr>)
    (delay <sexpr>) -> <promise>
 ```
-Quote suppresses evaluation of its expression. Delay defers evalution unti the `<promise>` is forced.
+Quote suppresses evaluation of its expression. Delay defers evalution unti the \<promise\> is forced.
 
 
 ### Symbol definition
@@ -84,8 +84,8 @@ Quote suppresses evaluation of its expression. Delay defers evalution unti the `
      <formal> := <symbol>
      <rest> := <symbol>
 ```
-Define `<symbol>` with `<sexpr>` value in the current environment.
-The second and third forms bind closures to the `<symbol>`.
+Define \<symbol\> with \<sexpr\> value in the current environment.
+The second and third forms bind closures to the \<symbol\>.
 
 ### Closure construction
 ```   
@@ -98,9 +98,9 @@ The second and third forms bind closures to the `<symbol>`.
    (lambda ({<formal>}+ . <rest>)
        {<sexpr>}*)
 ```
-The first form binds all actual arguments to `<formal>`.
+The first form binds all actual arguments to \<formal\>.
 The second form accepts a fixed number of actual arguments.
-The third form accepts one or more actuals and binds a list of the remainder to `<rest>`.
+The third form accepts one or more actuals and binds a list of the remainder to \<rest\>.
 
 ### Symbol accessing and setting
 ```   
@@ -129,7 +129,7 @@ The third form accepts one or more actuals and binds a list of the remainder to 
    (and {<sexpr>}*)
    (or {<sexpr>}*)
 ```
-#f and nil are considered false. All other values are considered true.
+_#f_ and _nil_ are considered false. All other values are considered true.
 
 ### Frame-based environement creation
 ```   
