@@ -180,15 +180,19 @@ Exit the interpreter with the exit function or type ^D or ^C.
 
 ### Application Dispatch Functions
 ```
-   (<primitive> {<args>}*)
-   (call/cc <expr>)
+   (<primitive> {<sexpr>}*)
+   (call/cc <sexpr>)
    (apply <fn> <list>)
-   (eval <expr> [<env>])
+   (eval <sexpr> [<env-sexpr>])
    (<continuation> [<value>])
-   (<closure> ...)
-   (map <func> <list>)
-   (foreach <func> <list>)
+   (<closure> {<sexprs>}*)
+   (map <fn> <list>)
+   (foreach <fn> <list>)
    (force <promise>)
+
+   Where:
+     <primitive> := any builtin/primitive funciton
+     <fn> := any callable
 ```
 
 ### List Functions
