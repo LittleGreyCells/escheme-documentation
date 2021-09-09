@@ -5,18 +5,18 @@ escheme Programming Guide
 
 Escheme supports the following primitive types:
 * characters -- the ascii characer set
-* booleans -- _#t_, _#f_
+* booleans -- #t, #f
 * fixnums -- 64-bit signed numbers
 * flonums -- double precision floating point
 * strings -- ascii strings
 * symbols -- with value cell and property list
 * lists -- the principal structured type
-* vectors -- both symbolic expression and byte vectors
+* vectors -- both symbolic expression and byte
 * environments -- both frame-based and associative
 * primitive functions -- system defined
 * closures -- user constructed with lambda
 * continuations -- execution contexts
-* ports -- _in/out/inout_ including string ports
+* ports -- strea, input/output/update including strings
 * promises -- delayed evaluation
 * code objects -- compiled objects
 * dictionaries -- python-like dicts where any object can be a key
@@ -567,14 +567,21 @@ Exit the interpreter with the exit function or type ^D or ^C.
 
 ## Extensions
 
-### Module System
-A module system fashioned after the STklos module system. See escheme-extensions/ems.
+Escheme has been extended with a number of useful packages which allow
+advantageous structuring of code: modules and object systems.
+
+* Escheme Module System (namespaces with visibility control)
+* Escheme Object System (generic function based)
+* "X" Object System (metaclass based)
+
+### Escheme Module System (EMS)
+
+EMS is fashioned after the STklos module system. See escheme-extensions/ems.
 
 ```
    (module <module-name> {<sexpr>}* )   -> <module-name>      (macro)
    (export {<symbol>*})                 -> nil                (macro)
    (import {<module-name>}*)            -> nil                (macro)
-
    (all-modules)                        -> <assoc-list>       (function)
    (find-module <module-name>)          -> <module>           (function)
    (current-module)                     -> <module>           (function)
@@ -583,30 +590,27 @@ A module system fashioned after the STklos module system. See escheme-extensions
    (module-exports <module>)            -> <symbol-list>      (function)
    (module-symbols <module>)            -> <symbol-list>      (function)
    (imported-symbol? <symbol> <module>) -> <boolean>          (function)
-
    (symbol-value <symbol> <module> [<default>])  -> <sexpr>   (function)
    (symbol-value* <symbol> <module> [<default>]) -> <sexpr>   (function)
    (in-module <module-name> <symbol>)            -> <sexpr>   (function)
-
    (select-module <module-name>)                              (macro)
 
    Where:
       <module-name> := <symbol>
       
 ```
+Load "escheme-exstenstions/ems/ems.scm" to check out.
 
-### Escheme Object System
-An object system fashioned after Dylan. See escheme-extensions/eos.
+### Escheme Object System (EOS)
+
+EOS is fashioned after Dylan but greatly simplified. See escheme-extensions/eos.
 
 ```
-   (define-class <name> <base-type> <slots>)  -> <name>      (macro)
-    
+   (define-class <name> <base-type> <slots>)  -> <name>      (macro)  
    (define-generic-function <name> <formals>) -> <gfunction> (macro)
    (define-function <name> <formals> <body>)  -> <function>  (macro)
-   (function <formals> <body>)                -> <function>  (macro)
-    
-   (make <type> {(<slot-name> <value>)}*)     -> <instance>  (macro)
-    
+   (function <formals> <body>)                -> <function>  (macro) 
+   (make <type> {(<slot-name> <value>)}*)     -> <instance>  (macro)   
    (slot-ref <slot-name> <instance>)          -> <value>     (macro)
    (slot-set! <slot-name> <instance> <value>) -> <value>     (macro)
 
@@ -628,20 +632,20 @@ An object system fashioned after Dylan. See escheme-extensions/eos.
       <instance> := eos class type instance
     
 ```
+Load "escheme-exstenstions/eos/eos.scm" to check out.
 
-### "X" Object System
-An object system fashioned after xscheme's. See escheme-extensions/xos.
+
+### "X" Object System (XOS)
+
+XOS is fashioned after xscheme's object system. See escheme-extensions/xos.
 
 ```
-   (class 'new '<ivars> ['<cvars> [<super>]])      -> <class>    (function)
-     
+   (class 'new '<ivars> ['<cvars> [<super>]])      -> <class>    (function) 
    (<class> 'new [<arg>...])                       -> <instance> (function)
-   (<class> 'method '<selector> '<params> '<body>) -> <selector> (function)
-     
+   (<class> 'method '<selector> '<params> '<body>) -> <selector> (function)   
    (slot-ref <instance> '<var>)                    -> <value>    (function)
    (slot-set! <instance> '<var> <value>)           -> <value>    (function)
-   (<class> 'method 'init '<params> '<body>)       -> init       (function)
-     
+   (<class> 'method 'init '<params> '<body>)       -> init       (function)     
    (send-super '<selector> [<arg>...])             -> <sexpr>    (macro)
 
    Where:
@@ -650,9 +654,11 @@ An object system fashioned after xscheme's. See escheme-extensions/xos.
       <super> := <class>
       <class> := <closure>
       <arg>   := <sexpr>
-      <instance> := <closure>
+      <selector> := <symbol>
       <params> := <symbol-list>
       <body> := <sexpr-list>
+      <instance> := <closure>
       <var> := <symbol>
       <value> := <sexpr>
 ```
+Load "escheme-exstenstions/xos/xos.scm" to check out.
