@@ -62,11 +62,13 @@ A simple EBNF that describes lexical and syntacitcal items:
 
 ## Special Forms
 
-### No or delayed evaluation
+### Suppress evaluation
 ```
    (quote <sexpr>)
-   (delay <sexpr>)
+   (delay <sexpr>) -> <promise>
 ```
+Quote suppresses evaluation of its expression. Delay defers evalution unti the <promise> is forced.
+
 
 ### Symbol definition
 ```   
@@ -82,6 +84,8 @@ A simple EBNF that describes lexical and syntacitcal items:
      <formal> := <symbol>
      <rest> := <symbol>
 ```
+Define <symbol> with <sexpr> value in the current environment.
+The second and third forms bind closures to the <symbol>.
 
 ### Closure construction
 ```   
@@ -94,6 +98,9 @@ A simple EBNF that describes lexical and syntacitcal items:
    (lambda ({<formal>}+ . <rest>)
        {<sexpr>}*)
 ```
+The first form binds all actual arguments to <formal>.
+The second form accepts a fixed number of actual arguments.
+The third form accepts one or more actuals and binds a list of the remainder to <rest>.
 
 ### Symbol accessing and setting
 ```   
@@ -109,7 +116,7 @@ A simple EBNF that describes lexical and syntacitcal items:
        [<else-sexpr>])
        
    (cond
-       {({<sexpr>}*)}*
+       {(<condition-sexpr> {<sexpr>}*)}*
        [else {<sexpr>}*])
 	
    (case <sexpr>
@@ -117,11 +124,13 @@ A simple EBNF that describes lexical and syntacitcal items:
        [else {<sexpr>}+])
 ```
 
-### Short curcuit boolean evaluation
+### Short circuit boolean evaluation
 ```
    (and {<sexpr>}*)
    (or {<sexpr>}*)
 ```
+#f and nil are considered false. All other values are considered true.
+
 ### Frame-based environement creation
 ```   
    (let {(<symbol> | (<symbol> <expr>))}+
@@ -149,29 +158,30 @@ A simple EBNF that describes lexical and syntacitcal items:
    (while <condition-sexpr>
        {<sexpr>}*)
 ```
-
+Although tail-recursion is the natural and efficient way to implementing looping, two additional forms are provided.
 ### Template expansion
 ```
    (quasiquote <template-sexpr>)
    (unquote <sexpr>)
    (unquotesplicing <sexpr>)
 ```
+Quasiquote (`) introduces a suppressed symbolic expression which serves as a template.
+Within the template expression an unquote (,) or unquotesplicing (,@) will force evaluation of the unquoted expression.
+Unquote substitutes the result of the evaluation. If the result of evaluation is a list, Unquotesplicing will substitute list contents.
 
 ## Functions
 
-### System Functions
+### Exit Function
 ```
    (exit)
-   (gc) -> <vector>
-   (mm) -> <vector>
-   (fs) -> <vector>
-   (%object-address <object>) -> <fixnum>
 ```
+Exit the interpreter with the (exit) function or type ^D or ^C.
+
 
 ### List Functions
 ```
-   (car <list>) -> <head>
-   (cdr <list>) -> <tail>
+   (car <list>) -> <cons-cell-sexpr1>
+   (cdr <list>) -> <cons-cell-sexpr2>
    (cxyr <sexpr>) -> (cxr (cyr <sexpr>)) where xy permute {a,d}
    (cxyzr <sexpr>) -> (cxr (cyr (czr <sexpr>))) where xyz permute {a,d}
    (cxyzwr <sexpr>) ->  (cxr (cyr (czr (cwr <sexpr>)))) where xyzw permute {a,d}
@@ -440,13 +450,13 @@ A simple EBNF that describes lexical and syntacitcal items:
    (member <sexpr> <list>) -> (<sexpr> | nil)
    (memq <sexpr> <list>) -> (<sexpr> | nil)
    (memv <sexpr> <list>) -> (<sexpr> | nil)
-   (assoc <key-sexpr> <alist>) -> (<pair> | nil)
-   (assq <key-sexpr> <alist>) -> (<pair> | nil)
-   (assv <key-sexpr> <alist>) -> (<pair> | nil)
+   (assoc <key-sexpr> <assoc-alist>) -> (<pair> | nil)
+   (assq <key-sexpr> <assoc-list>) -> (<pair> | nil)
+   (assv <key-sexpr> <assoc-list>) -> (<pair> | nil)
 
    Where:
      <pair> := (<key-sexpr> . <value-sexpr)
-     <alist> := ({<pair>}*)   
+     <assoc-list> := ({<pair>}*)   
 ```
 
 ### Closure Functions
@@ -510,6 +520,13 @@ A simple EBNF that describes lexical and syntacitcal items:
    (chdir <string>) -> <return-code-fixnum>
    (getcwd) -> <string>
    (getenv <var-string>) -> <val-string>
+```
+
+### Memory Management Functions
+```
+   (gc) -> <vector>
+   (mm) -> <vector>
+   (fs) -> <vector>
 ```
 
 ### Socket Functions
