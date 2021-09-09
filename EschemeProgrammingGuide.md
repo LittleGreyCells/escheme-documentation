@@ -67,7 +67,7 @@ A simple EBNF that describes lexical and syntacitcal items:
    (quote <sexpr>)
    (delay <sexpr>) -> <promise>
 ```
-Quote suppresses evaluation of its expression. Delay defers evalution unti the <promise> is forced.
+Quote suppresses evaluation of its expression. Delay defers evalution unti the `<promise>` is forced.
 
 
 ### Symbol definition
@@ -84,8 +84,8 @@ Quote suppresses evaluation of its expression. Delay defers evalution unti the <
      <formal> := <symbol>
      <rest> := <symbol>
 ```
-Define <symbol> with <sexpr> value in the current environment.
-The second and third forms bind closures to the <symbol>.
+Define `<symbol>` with `<sexpr>` value in the current environment.
+The second and third forms bind closures to the `<symbol>`.
 
 ### Closure construction
 ```   
@@ -98,9 +98,9 @@ The second and third forms bind closures to the <symbol>.
    (lambda ({<formal>}+ . <rest>)
        {<sexpr>}*)
 ```
-The first form binds all actual arguments to <formal>.
+The first form binds all actual arguments to `<formal>`.
 The second form accepts a fixed number of actual arguments.
-The third form accepts one or more actuals and binds a list of the remainder to <rest>.
+The third form accepts one or more actuals and binds a list of the remainder to `<rest>`.
 
 ### Symbol accessing and setting
 ```   
@@ -159,6 +159,7 @@ The third form accepts one or more actuals and binds a list of the remainder to 
        {<sexpr>}*)
 ```
 Although tail-recursion is the natural and efficient way to implementing looping, two additional forms are provided.
+
 ### Template expansion
 ```
    (quasiquote <template-sexpr>)
@@ -167,7 +168,7 @@ Although tail-recursion is the natural and efficient way to implementing looping
 ```
 Quasiquote (`) introduces a suppressed symbolic expression which serves as a template.
 Within the template expression an unquote (,) or unquotesplicing (,@) will force evaluation of the unquoted expression.
-Unquote substitutes the result of the evaluation. If the result of evaluation is a list, Unquotesplicing will substitute list contents.
+Unquote substitutes the result of the evaluation. If the result of evaluation is a list, unquotesplicing will substitute list contents.
 
 ## Functions
 
@@ -175,7 +176,7 @@ Unquote substitutes the result of the evaluation. If the result of evaluation is
 ```
    (exit)
 ```
-Exit the interpreter with the (exit) function or type ^D or ^C.
+Exit the interpreter with the exit function or type ^D or ^C.
 
 
 ### List Functions
@@ -598,7 +599,7 @@ A module system fashioned after the STklos module system. See escheme-extensions
 An object system fashioned after Dylan. See escheme-extensions/eos.
 
 ```
-   (define-class <name> <base-type> <slots>)   -> <name>     (macro)
+   (define-class <name> <base-type> <slots>)  -> <name>      (macro)
     
    (define-generic-function <name> <formals>) -> <gfunction> (macro)
    (define-function <name> <formals> <body>)  -> <function>  (macro)
