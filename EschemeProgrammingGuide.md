@@ -166,9 +166,10 @@ Although tail-recursion is the natural and efficient way to implement looping, t
    (unquote <sexpr>)
    (unquotesplicing <sexpr>)
 ```
-Quasiquote (`) introduces a suppressed symbolic expression which serves as a template.
+Quasiquote (`) introduces a symbolic expression which serves as a template.
 Within the template expression an unquote (,) or unquotesplicing (,@) will force evaluation of the unquoted expression.
-Unquote substitutes the result of the evaluation. If the result of evaluation is a list, unquotesplicing will substitute list contents.
+Unquote substitutes the result of the evaluation. If the result of evaluation is a list, unquotesplicing can be
+used to substitute list contents.
 
 ## Functions
 
