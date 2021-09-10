@@ -247,7 +247,7 @@ Exit the interpreter by function. Or type ^D or ^C.
 ```
    (apply <fn> {<sexpr>}+) -> <fn-result-sexpr>
    (call/cc <closure>) -> <fn-result-sexpr>
-   (eval <sexp> (<env-expr>)) -> <evaluated-sexpr>
+   (eval <sexp> [<anyenv>]) -> <evaluated-sexpr>
    (map <fn> {<list>}+) -> <list-of-fn-results>
    (for-each <fn> {<list>}+) -> nil
    (force <promise>) -> <evaluated-delay-sexpr>
@@ -352,7 +352,7 @@ Exit the interpreter by function. Or type ^D or ^C.
    (%make-code <byte-vector> <sexpr-vector>) -> <code>
    (%get-bcodes <code>) -> <byte-vector>
    (%get-sexprs <code>) -> <sexpr-vector>
-   (compile <sexpr> [<env>]) -> <code>
+   (compile <sexpr> [<anyenv>]) -> <code>
    (disassemble <code>) -> nil
 ```
 
@@ -472,7 +472,7 @@ Exit the interpreter by function. Or type ^D or ^C.
 
 ### Closure Functions
 ```
-   (%closure-benv <closure>) -> <env>
+   (%closure-benv <closure>) -> <anyenv>
    (%closure-numv <closure>) -> <fixnum>
    (%closure-rest <closure>) -> <boolean>
    (%closure-vars <closure>) -> <list>
