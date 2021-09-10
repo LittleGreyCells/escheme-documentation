@@ -529,10 +529,11 @@ Exit the interpreter by function. Or type ^D or ^C.
 
 ### Memory Management Functions
 ```
-   (gc) -> <vector>
-   (mm) -> <vector>
-   (fs) -> <vector>
+   (gc) -> <mm-statistics-vector>
+   (mm) -> <mm-statistics-vector>
+   (fs) -> <fs-statistics-vector>
 ```
+(gc) forces garbage collection. (mm) simply returns memory managment statisitcs. (fs) returns frame store statistics.
 
 ### Socket Functions
 ```
