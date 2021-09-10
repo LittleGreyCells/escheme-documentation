@@ -25,10 +25,10 @@ Escheme supports the following primitive types:
 A simple EBNF that describes lexical and syntacitcal items:
 ```
    <lhs> := <rhs> -- <rhs> can replace <lhs>
-   {<item>}* -- zero or more <item>
-   {<item>}+ -- one or more <items>
+   {<item>}* -- zero or more <item>s
+   {<item>}+ -- one or more <item>s
    [<item>] -- optional <item>
-   (<item1> | <item2>) -- <item1> or <item2>
+   <item1> | <item2> -- <item1> or <item2>
    <item1> .. <itemN> -- one of sequence described by [<item1>,<itemN>]
 ```
 
@@ -116,12 +116,18 @@ The third form accepts one or more actuals and binds a list of the remainder to 
        [<else-sexpr>])
        
    (cond
-       {(<condition-sexpr> {<sexpr>}*)}*
+       {<cond-clause>}*
        [else {<sexpr>}*])
 	
    (case <sexpr>
-       {(({<sexpr>}+) <sexpr>)}*
+       {<case-clause>}*
        [else {<sexpr>}+])
+
+   Where:
+      <cond-clause> := (<condition-sexpr> {<consequent>}*)
+      <cause-clause> := (<match-list> {<consequent>}*)
+      <match-list> := ({<sexpr>}+)
+      <consequent> := <sexpr>
 ```
 
 ### Short circuit boolean evaluation
@@ -593,7 +599,6 @@ See escheme-extensions/eos.
 ### "X" Object System (XOS)
 
 XOS is an xscheme inspired object system that is metaclass based. For those familiar 
-with Smalltalk or Python it should feel familiar -- classes, methods, 
-single inheritance -- but with an s-expression syntax.
+with Python it should feel familiar -- classes, methods, inheritance -- but with an s-expression syntax.
 
 See escheme-extensions/xos.
