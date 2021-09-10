@@ -131,7 +131,7 @@ The third form accepts one or more actuals and binds a list of the remainder to 
 ```
 #f and nil are considered false. All other values are considered true.
 
-### Frame-based environement creation
+### Frame-based environment creation
 ```   
    (let {(<symbol> | (<symbol> <expr>))}+
        {<sexpr>}*)
@@ -176,7 +176,7 @@ Unquote substitutes the result of the evaluation. If the result of evaluation is
 ```
    (exit)
 ```
-Exit the interpreter with the exit function or type ^D or ^C.
+Exit the interpreter by function. Or type ^D or ^C.
 
 ### List Functions
 ```
@@ -319,18 +319,22 @@ Exit the interpreter with the exit function or type ^D or ^C.
 
 ### Environment Functions
 ```
-   (the-environment) -> <env>
-   (procedure-environment <closure>) -> <env>
-   (environment-bindings <env>) -> <bindings>
-   (environment-parent <env>) -> <env>
-   (%make-environment <bindings> <parent-env>) -> <env>
-   (the-global-environment) -> <null-env>
-   (%make-assoc-env [<parent-env>]) -> <assoc-env>
+   (the-environment) -> <anyenv>
+   (procedure-environment <closure>) -> <anyenv>
+   (environment-bindings <anyenv>) -> <bindings>
+   (environment-parent <anyenv>) -> <anyenv>
+   (%make-environment <bindings> <anyenv) -> <env>
+   (the-global-environment) -> <global-env>
+   (%make-assoc-env [<anyenv>]) -> <assoc-env>
    (%assoc-env-has? <assoc-env> <symbol>) -> <boolean>
    (%assoc-env-ref <assoc-env> <symbol>) -> <value-sexpr>
    (%assoc-env-set! <assoc-env> <symbol> <value-sexpr>) -> <value-sexpr>
 
    Where:
+     <global-env> := the global environment
+     <env> := frame-based environment
+     <assoc-env> := associative environment
+     <anyenv> := <global-env> | <env> | <assoc-env>
      <binding> := (<symbol> . <value-sexpr>)
      <bindings> := ({<binding>}*)
    
