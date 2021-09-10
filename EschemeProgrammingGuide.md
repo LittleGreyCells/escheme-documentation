@@ -595,7 +595,7 @@ See escheme-extensions/ems.
 
 ### Escheme Object System (EOS)
 
-EOS is an Dylan inspired object system for escheme employing classes and generic 
+EOS is an Dylan inspired object system employing classes and generic 
 functions. EOS uses multi-dispatch to select the generic function implemenation
 for dispatch.
 
@@ -603,8 +603,8 @@ See escheme-extensions/eos.
 
 ### "X" Object System (XOS)
 
-XOS is a metaclass-based object system for escheme. For those familiar 
+XOS is an xscheme inspired object system that is metaclass based. For those familiar 
 with Smalltalk or Python it should feel familiar -- classes, methods, 
-(single) inheritance -- but with an s-expression syntax.
+single inheritance -- but with an s-expression syntax.
 
 See escheme-extensions/xos.
