@@ -586,95 +586,25 @@ Exit the interpreter with the exit function or type ^D or ^C.
 Escheme has been extended with a number of useful packages which allow
 advantageous structuring of code: modules and object systems.
 
-* Escheme Module System (namespaces with visibility control)
-* Escheme Object System (generic function based)
-* "X" Object System (metaclass based)
-
 ### Escheme Module System (EMS)
 
-EMS is fashioned after the STklos module system. See escheme-extensions/ems.
+EMS is an approximate implemenation of the module
+system provided by STklos.
 
-```
-   (module <module-name> {<sexpr>}* )   -> <module-name>      (macro)
-   (export {<symbol>*})                 -> nil                (macro)
-   (import {<module-name>}*)            -> nil                (macro)
-   (all-modules)                        -> <assoc-list>       (function)
-   (find-module <module-name>)          -> <module>           (function)
-   (current-module)                     -> <module>           (function)
-   (module-name <module>)               -> <symbol>           (function)
-   (module-imports <module>)            -> <module-name-list> (function)
-   (module-exports <module>)            -> <symbol-list>      (function)
-   (module-symbols <module>)            -> <symbol-list>      (function)
-   (imported-symbol? <symbol> <module>) -> <boolean>          (function)
-   (symbol-value <symbol> <module> [<default>])  -> <sexpr>   (function)
-   (symbol-value* <symbol> <module> [<default>]) -> <sexpr>   (function)
-   (in-module <module-name> <symbol>)            -> <sexpr>   (function)
-   (select-module <module-name>)                              (macro)
-
-   Where:
-      <module-name> := <symbol>
-      
-```
-Load "escheme-exstenstions/ems/ems.scm" to check out.
+See escheme-extensions/ems.
 
 ### Escheme Object System (EOS)
 
-EOS is fashioned after Dylan but greatly simplified. See escheme-extensions/eos.
+EOS is an Dylan inspired object system for escheme employing classes and generic 
+functions. EOS uses multi-dispatch to select the generic function implemenation
+for dispatch.
 
-```
-   (define-class <name> <base-type> <slots>)  -> <name>      (macro)  
-   (define-generic-function <name> <formals>) -> <gfunction> (macro)
-   (define-function <name> <formals> <body>)  -> <function>  (macro)
-   (function <formals> <body>)                -> <function>  (macro) 
-   (make <type> {(<slot-name> <value>)}*)     -> <instance>  (macro)   
-   (slot-ref <slot-name> <instance>)          -> <value>     (macro)
-   (slot-set! <slot-name> <instance> <value>) -> <value>     (macro)
-
-   Where:
-      <name> := <symbol>
-      <base-type> := <class-name> 
-      <sexpr> := escheme symbolic expression
-      <value> := <sexpr>
-      <slot> := ( <slot-name> <type> [<value-guard>]) | <slot-name>
-      <slots> := {<slot>}*
-      <gfunction> := <closure>
-      <function> := <closure>
-      <type> := name of eos class type
-      <slot-name> := <symbol>
-      <value-guard> := predicate function
-      <formals> := (<formal> ...)
-      <formal> := (<name> <type>) | <name>
-      <body> := {<sexpr>*}
-      <instance> := eos class type instance
-    
-```
-Load "escheme-exstenstions/eos/eos.scm" to check out.
-
+See escheme-extensions/eos.
 
 ### "X" Object System (XOS)
 
-XOS is fashioned after xscheme's object system. See escheme-extensions/xos.
+XOS is a metaclass-based object system for escheme. For those familiar 
+with Smalltalk or Python it should feel familiar -- classes, methods, 
+(single) inheritance -- but with an s-expression syntax.
 
-```
-   (class 'new '<ivars> ['<cvars> [<super>]])      -> <class>    (function) 
-   (<class> 'new [<arg>...])                       -> <instance> (function)
-   (<class> 'method '<selector> '<params> '<body>) -> <selector> (function)   
-   (slot-ref <instance> '<var>)                    -> <value>    (function)
-   (slot-set! <instance> '<var> <value>)           -> <value>    (function)
-   (<class> 'method 'init '<params> '<body>)       -> init       (function)     
-   (send-super '<selector> [<arg>...])             -> <sexpr>    (macro)
-
-   Where:
-      <ivars> := <symbol-list>
-      <cvars> := <symbol-list>
-      <super> := <class>
-      <class> := <closure>
-      <arg>   := <sexpr>
-      <selector> := <symbol>
-      <params> := <symbol-list>
-      <body> := <sexpr-list>
-      <instance> := <closure>
-      <var> := <symbol>
-      <value> := <sexpr>
-```
-Load "escheme-exstenstions/xos/xos.scm" to check out.
+See escheme-extensions/xos.
